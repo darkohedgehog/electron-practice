@@ -1,12 +1,36 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
-import { isDev } from './util.js';
+import { addBook, getBooks } from './db.js';
 
-app.on ('ready', () => {
-    const mainWindow = new BrowserWindow({});
-    if (isDev()) {
-       mainWindow.loadURL('http://localhost:5123');
-    } else {
-        mainWindow.loadURL(path.join(app.getAppPath(), '/dist-react/index.html'));
-    }
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+
+function createWindow() {
+  const win = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      // nodeIntegration: false – uvek dobro imati ovo isključeno
+    },
+  });
+
+  const devURL = 'http://localhost:5123';
+  const prodURL = `file://${path.join(app.getAppPath(), '/dist-react/index.html')}`;
+  win.loadURL(app.isPackaged ? prodURL : devURL);
+}
+
+app.whenReady().then(createWindow);
+
+// IPC kanali
+ipcMain.handle('add-book', async (event, book) => {
+  return addBook(book);
+});
+
+ipcMain.handle('get-books', async () => {
+  return getBooks();
 });
