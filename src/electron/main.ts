@@ -16,6 +16,9 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       // nodeIntegration: false – uvek dobro imati ovo isključeno
+      contextIsolation: true,
+      nodeIntegration: false,
+
     },
   });
 

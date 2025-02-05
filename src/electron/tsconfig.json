@@ -12,5 +12,6 @@
       "skipLibCheck": true,
       // add global types
       //"types": ["../../types"]
+      "jsx": "react-jsx",
     }
   }
