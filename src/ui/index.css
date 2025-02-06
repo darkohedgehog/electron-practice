@@ -1,9 +1,22 @@
 @import "tailwindcss";
 
+@layer base {
+  :root {
+    /* Svetli mod: linearni gradijent sa željenim bojama */
+    --background: linear-gradient(270deg, #dbdaea, #dcdcdc, #c0c0c0);
+    --foreground: 0 0% 0%; /* Crna boja teksta (ako ti treba) */
+  }
+  .dark {
+    /* Tamni mod: linearni gradijent sa željenim bojama */
+    --background: linear-gradient(270deg, #1b1b1b, #0a0a3d, #1f003d);
+    --foreground: 0 0% 100%; /* Bela boja teksta (ako ti treba) */
+  }
 
-
-
-
-
-
-
+  /* Primena varijabli na body */
+  body {
+    /* Koristimo background varijablu direktno, jer već sadrži linear-gradient */
+    background: var(--background);
+    /* Ako želiš da tekst menja boju, koristi hsl() format, a varijabla mora biti formatirana kao HSL vrednost */
+    color: hsl(var(--foreground));
+  }
+}
