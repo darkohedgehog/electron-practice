@@ -6,13 +6,17 @@ import { app } from 'electron';
 const dbPath = path.join(app.getPath('userData'), 'books.db');
 const db = new Database(dbPath);
 
-// Kreiranje tabele za knjige
+// Kreiranje tabele za knjige sa podrškom za latinicu i ćirilicu
 db.prepare(`
   CREATE TABLE IF NOT EXISTS books (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT,
-    author TEXT,
-    file_path TEXT,
+    title_lat TEXT,          -- Naslov na latinici
+    title_cyr TEXT,          -- Naslov na ćirilici
+    author_lat TEXT,         -- Autor na latinici
+    author_cyr TEXT,         -- Autor na ćirilici
+    description_lat TEXT,    -- Opis na latinici (ako ti treba)
+    description_cyr TEXT,    -- Opis na ćirilici (ako ti treba)
+    file_path TEXT,          -- Putanja do fajla (npr. PDF ili slično)
     added_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `).run();
@@ -30,18 +34,44 @@ db.prepare(`
   )
 `).run();
 
-export function addBook(book: { title: string; author: string; file_path: string }) {
-  const stmt = db.prepare('INSERT INTO books (title, author, file_path) VALUES (?, ?, ?)');
-  const info = stmt.run(book.title, book.author, book.file_path);
+// Funkcija za dodavanje knjige – prihvata podatke za oba jezika
+export function addBook(book: { 
+  title_lat: string; 
+  title_cyr: string;
+  author_lat: string;
+  author_cyr: string;
+  description_lat?: string;   // Opcionalno, ako korisnik unosi opis
+  description_cyr?: string;
+  file_path: string;
+}) {
+  const stmt = db.prepare(`
+    INSERT INTO books (title_lat, title_cyr, author_lat, author_cyr, description_lat, description_cyr, file_path)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  const info = stmt.run(
+    book.title_lat, 
+    book.title_cyr, 
+    book.author_lat, 
+    book.author_cyr, 
+    book.description_lat || null, 
+    book.description_cyr || null, 
+    book.file_path
+  );
   return info.lastInsertRowid;
 }
 
+// Funkcija za dobijanje knjiga – vraća sve podatke
 export function getBooks() {
   return db.prepare('SELECT * FROM books ORDER BY added_at DESC').all();
 }
 
-// Funkcija za dodavanje slike
-export function addBookImage(image: { book_id: number; image_path: string; image_type: string; position?: number }) {
+// Funkcija za dodavanje slike za knjigu
+export function addBookImage(image: { 
+  book_id: number; 
+  image_path: string; 
+  image_type: string; 
+  position?: number;
+}) {
   const stmt = db.prepare('INSERT INTO book_images (book_id, image_path, image_type, position) VALUES (?, ?, ?, ?)');
   const info = stmt.run(image.book_id, image.image_path, image.image_type, image.position || null);
   return info.lastInsertRowid;

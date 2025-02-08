@@ -1,46 +1,56 @@
-// mode-toggle.tsx
-import { Moon, Sun } from "lucide-react";
-import { Button } from "@/ui/components/ui/button";
+
+import { MdOutlineLightMode, MdOutlineDarkMode, MdOutlineSystemSecurityUpdateGood } from "react-icons/md";
+
+import { Button } from "@/ui/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/ui/components/ui/dropdown-menu";
-import { useTheme } from "@/ui/components/theme-provider";
+} from "@/ui/components/ui/dropdown-menu"
+import { useTheme } from "@/ui/components/theme-provider"
 
 export function ModeToggle() {
-  const { theme, setTheme } = useTheme(); // dodajemo i trenutnu temu radi debaga
+  const { theme, setTheme } = useTheme()
+
+  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild className="ml-14">
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">Toggle theme</span>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          size="icon"
+          className="relative rounded-full border-accent dark:border-accentDark hover:dark:bg-accentDark"
+        >
+          {isDark ? (
+            <MdOutlineDarkMode className="h-[1.2rem] w-[1.2rem] text-slate-400" />
+          ) : (
+            <MdOutlineLightMode className="h-[1.2rem] w-[1.2rem] text-yellow-200" />
+          )}
+          <span className="sr-only">Toggle Theme</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => { 
-          console.log("Setting theme to light. Current theme:", theme);
-          setTheme("light");
-        }}>
-          Light
+        <DropdownMenuItem
+          className="gap-1 flex text-accent dark:text-accentDark"
+          onClick={() => setTheme("light")}
+        >
+          <MdOutlineLightMode /> Svetla
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {
-          console.log("Setting theme to dark. Current theme:", theme);
-          setTheme("dark");
-        }}>
-          Dark
+        <DropdownMenuItem
+          className="gap-1 flex text-accent dark:text-accentDark"
+          onClick={() => setTheme("dark")}
+        >
+          <MdOutlineDarkMode /> Tamna
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => {
-          console.log("Setting theme to system. Current theme:", theme);
-          setTheme("system");
-        }}>
-          System
+        <DropdownMenuItem
+          className="gap-1 flex text-accent dark:text-accentDark"
+          onClick={() => setTheme("system")}
+        >
+          <MdOutlineSystemSecurityUpdateGood /> Sistem
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

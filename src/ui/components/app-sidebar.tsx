@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search } from "lucide-react"
+import { LibraryBig, Home, UsersRound, Upload } from "lucide-react"
 import { Link } from "react-router-dom";
 
 import {
@@ -22,17 +22,17 @@ const items = [
   {
     title: "O nama",
     url: "/about",
-    icon: Inbox,
+    icon: UsersRound,
   },
   {
     title: "Biblioteka",
     url: "/library",
-    icon: Calendar,
+    icon: LibraryBig,
   },
   {
-    title: "Upload",
+    title: "Podaci",
     url: "/upload",
-    icon: Search,
+    icon: Upload,
   },
 ]
 
