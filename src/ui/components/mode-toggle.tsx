@@ -21,7 +21,7 @@ export function ModeToggle() {
         <Button
           variant="outline"
           size="icon"
-          className="relative rounded-full border-accent dark:border-accentDark hover:dark:bg-accentDark"
+          className="relative rounded-full border-accent dark:border-accentDark dark:hover:bg-accentDark"
         >
           {isDark ? (
             <MdOutlineDarkMode className="h-[1.2rem] w-[1.2rem] text-slate-400" />

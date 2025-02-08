@@ -1,4 +1,4 @@
-import { LibraryBig, Home, UsersRound, Upload } from "lucide-react"
+import { LibraryBig, Home, UsersRound, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import {
@@ -11,45 +11,51 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "./ui/sidebar";
+import LangSwitch from "./LangSwitch";
+import { useTranslation } from "react-i18next";
 
-// Menu items.
+// Definišemo items koristeći prevodne ključeve
 const items = [
   {
-    title: "Naslovna",
+    titleKey: "menu.home",    
     url: "/home",
     icon: Home,
   },
   {
-    title: "O nama",
+    titleKey: "menu.about",  
     url: "/about",
     icon: UsersRound,
   },
   {
-    title: "Biblioteka",
+    titleKey: "menu.library",
     url: "/library",
     icon: LibraryBig,
   },
   {
-    title: "Podaci",
+    titleKey: "menu.upload",
     url: "/upload",
     icon: Upload,
   },
-]
+];
 
 export function AppSidebar() {
+  const { t } = useTranslation();
+
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="my-10 text-2xl font-bold">Biblioteka</SidebarGroupLabel>
+          <SidebarGroupLabel className="my-10 text-2xl font-bold">
+            {t("sidebarTitle")}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-4">
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.titleKey}>
                   <SidebarMenuButton asChild>
                     <Link to={item.url}>
                       <item.icon />
-                      <span className="font-bold">{item.title}</span>
+                      <span className="font-bold">{t(item.titleKey)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -58,6 +64,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <div className="flex items-center justify-center mb-10">
+        <LangSwitch />
+      </div>
     </Sidebar>
-  )
+  );
 }
