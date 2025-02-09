@@ -6,7 +6,7 @@ import { app } from 'electron';
 const dbPath = path.join(app.getPath('userData'), 'books.db');
 const db = new Database(dbPath);
 
-// Kreiranje tabele za knjige sa podrškom za latinicu i ćirilicu
+// Kreiranje tabele za knjige sa podrškom za latinicu i ćirilicu, dodata kolona "year"
 db.prepare(`
   CREATE TABLE IF NOT EXISTS books (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -14,9 +14,10 @@ db.prepare(`
     title_cyr TEXT,          -- Naslov na ćirilici
     author_lat TEXT,         -- Autor na latinici
     author_cyr TEXT,         -- Autor na ćirilici
-    description_lat TEXT,    -- Opis na latinici (ako ti treba)
-    description_cyr TEXT,    -- Opis na ćirilici (ako ti treba)
+    description_lat TEXT,    -- Opis na latinici
+    description_cyr TEXT,    -- Opis na ćirilici
     file_path TEXT,          -- Putanja do fajla (npr. PDF ili slično)
+    year TEXT,               -- Godina izdanja
     added_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `).run();
@@ -34,19 +35,20 @@ db.prepare(`
   )
 `).run();
 
-// Funkcija za dodavanje knjige – prihvata podatke za oba jezika
+// Funkcija za dodavanje knjige – prihvata podatke za oba jezika i godinu izdanja
 export function addBook(book: { 
   title_lat: string; 
   title_cyr: string;
   author_lat: string;
   author_cyr: string;
-  description_lat?: string;   // Opcionalno, ako korisnik unosi opis
+  description_lat?: string;
   description_cyr?: string;
   file_path: string;
+  year: string;
 }) {
   const stmt = db.prepare(`
-    INSERT INTO books (title_lat, title_cyr, author_lat, author_cyr, description_lat, description_cyr, file_path)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO books (title_lat, title_cyr, author_lat, author_cyr, description_lat, description_cyr, file_path, year)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const info = stmt.run(
     book.title_lat, 
@@ -55,7 +57,8 @@ export function addBook(book: {
     book.author_cyr, 
     book.description_lat || null, 
     book.description_cyr || null, 
-    book.file_path
+    book.file_path,
+    book.year
   );
   return info.lastInsertRowid;
 }
