@@ -6,6 +6,7 @@ import About from "./about/About";
 import Home from "./home/Home";
 import Library from "./library/Library";
 import Upload from "./upload/Upload";
+import BookDetails from "./library/BookDetails";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/library" element={<Library />} />
+            <Route path="/library/:id" element={<BookDetails />} />
             <Route path="/upload" element={<Upload />} />
           </Routes>
         </Layout>

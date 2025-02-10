@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const Upload = () => {
+  console.log(window.api);
   // State za unos knjige
   const [titleLat, setTitleLat] = useState('');
   const [titleCyr, setTitleCyr] = useState('');
@@ -16,11 +17,15 @@ const Upload = () => {
   // Handler za upload fajla (npr. naslovna slika)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0] as File & { path: string };
-      setFilePath(file.path);
+      const file = e.target.files[0] as File & { path?: string };
+      console.log("Selected file object:", file);
+      const filePathValue = file.path || file.name;
+      console.log("File path value:", filePathValue);
+      setFilePath(filePathValue);
     }
   };
-
+  
+  
   // Handler za galeriju
   const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -31,8 +36,13 @@ const Upload = () => {
   // Handler za form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // Pripremi objekat knjige
+  
+    // Provera ako file_path nije definisan
+    if (!filePath) {
+      alert("Morate odabrati naslovnu sliku!");
+      return;
+    }
+  
     const book = {
       title_lat: titleLat,
       title_cyr: titleCyr,
@@ -43,13 +53,16 @@ const Upload = () => {
       file_path: filePath,
       year: year,
     };
-
+  
+    console.log('Podaci koje šaljem:', book);
+  
     try {
-      // Pozivamo IPC kanal definisan u preload-u da dodamo knjigu
+      if (!window.api) {
+        throw new Error("window.api nije definisan. Proverite preload konfiguraciju i da li pokrećete aplikaciju u Electron-u.");
+      }
       const insertedId = await window.api.addBook(book);
       console.log('Knjiga dodata sa ID:', insertedId);
-
-      // Ako postoje galerijske slike, dodaj ih u bazu
+  
       if (galleryFiles) {
         for (let i = 0; i < galleryFiles.length; i++) {
           const file = galleryFiles[i] as File & { path: string };
@@ -61,7 +74,7 @@ const Upload = () => {
           });
         }
       }
-
+  
       // Reset forme
       setTitleLat('');
       setTitleCyr('');
@@ -72,13 +85,14 @@ const Upload = () => {
       setFilePath('');
       setYear('');
       setGalleryFiles(null);
-
+  
       alert('Knjiga uspešno dodata!');
     } catch (error) {
       console.error('Greška pri dodavanju knjige:', error);
       alert('Došlo je do greške pri dodavanju knjige.');
     }
   };
+  
 
   return (
     <div className='ml-48 my-8'>

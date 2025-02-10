@@ -1,8 +1,19 @@
 export {};
 
+// Definiši tip za BookImage
+export interface BookImage {
+  id: number;
+  book_id: number;
+  image_path: string;
+  image_type: string;
+  position: number;
+  added_at: string; // Ako ti je potrebno, ili možeš ostaviti bez
+}
+
 declare global {
   interface Window {
     api: {
+      getBookImages(id: number): Promise<BookImage[]>;
       addBookImage(arg0: { 
         book_id: number; 
         image_path: string; 
