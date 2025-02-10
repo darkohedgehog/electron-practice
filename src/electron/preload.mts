@@ -2,7 +2,6 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 console.log('Preload script loaded');
 
-
 contextBridge.exposeInMainWorld('api', {
   addBook: (book: { 
     title_lat: string; 
@@ -22,6 +21,10 @@ contextBridge.exposeInMainWorld('api', {
   }) => ipcRenderer.invoke('add-book-image', image),
   getBooks: () => ipcRenderer.invoke('get-books'),
   getBookImages: (book_id: number) => ipcRenderer.invoke('get-book-images', book_id),
+  openFileDialog: () => ipcRenderer.invoke('open-file-dialog'),
+  copyImage: (originalFilePath: string) => ipcRenderer.invoke('copy-image', originalFilePath),
+  getUserDataPath: () => ipcRenderer.invoke('get-user-data-path'),
+  copyGalleryImage: (originalFilePath: string) => ipcRenderer.invoke('copy-gallery-image', originalFilePath),
 });
 
 export {};

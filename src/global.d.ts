@@ -7,19 +7,35 @@ export interface BookImage {
   image_path: string;
   image_type: string;
   position: number;
-  added_at: string; // Ako ti je potrebno, ili možeš ostaviti bez
+  added_at: string; // Možeš ostaviti i bez, u zavisnosti od potrebe
+}
+
+// (Opcionalno) Definiši tip za Book, ako ti je potreban u globalnoj deklaraciji
+export interface Book {
+  id: number;
+  title_lat: string;
+  title_cyr: string;
+  author_lat: string;
+  author_cyr: string;
+  description_lat?: string;
+  description_cyr?: string;
+  file_path: string;
+  year: string;
+  added_at: string;
 }
 
 declare global {
   interface Window {
     api: {
+      openFileDialog: any;
+      userDataPath: string;
       getBookImages(id: number): Promise<BookImage[]>;
       addBookImage(arg0: { 
         book_id: number; 
         image_path: string; 
         image_type: string; 
         position: number; 
-      }): unknown;
+      }): Promise<number>;  // ili Promise<number> ako ti to odgovara
       addBook: (book: {
         title_lat: string;
         title_cyr: string;
@@ -28,9 +44,12 @@ declare global {
         description_lat?: string;
         description_cyr?: string;
         file_path: string;
-        year: string; // Dodato, kako bi se uklopio sa novom strukturom
+        year: string;
       }) => Promise<number>;
-      getBooks: () => Promise<any[]>;
+      getBooks: () => Promise<Book[]>;
+      copyImage(originalFilePath: string): Promise<string>;
+      copyGalleryImage(originalFilePath: string): Promise<string>;
+      getUserDataPath(): Promise<string>;
       // Ako imaš još API funkcija, dodaj ih ovde...
     };
   }

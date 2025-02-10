@@ -1,6 +1,10 @@
 import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron';
 import * as path from 'path';
 import { addBook, getBooks, getBookImages, addBookImage } from './db.js'; // Uvezi sve funkcije iz db.js
+import { copyFileSync, existsSync, mkdirSync } from 'fs';
+import { dialog } from 'electron';
+
+
 
 
 // Definiši tip za knjigu
@@ -24,6 +28,7 @@ function createWindow() {
       preload: preloadPath,
       contextIsolation: true,
       nodeIntegration: false,
+      webSecurity: false,
     },
   });
   console.log('Loading preload from:', preloadPath);
@@ -38,6 +43,17 @@ function createWindow() {
 app.whenReady().then(() => {
   console.log('User data path:', app.getPath('userData'));
   createWindow();
+});
+
+ipcMain.handle('open-file-dialog', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'gif'] }]
+  });
+  if (!result.canceled && result.filePaths.length > 0) {
+    return result.filePaths[0]; // Vraća apsolutnu putanju odabranog fajla
+  }
+  throw new Error('No file selected');
 });
 
 // IPC handler za dodavanje knjige
@@ -94,3 +110,52 @@ ipcMain.handle('get-book-images', async (event: IpcMainInvokeEvent, book_id: num
     throw error;
   }
 });
+
+
+ipcMain.handle('get-user-data-path', async () => {
+  return app.getPath('userData');
+});
+
+ipcMain.handle('copy-image', async (event, originalFilePath: string) => {
+  try {
+    const userDataPath = app.getPath('userData');
+    const imagesFolder = path.join(userDataPath, 'images');
+    
+    if (!existsSync(imagesFolder)) {
+      mkdirSync(imagesFolder, { recursive: true });
+    }
+    
+    const fileName = path.basename(originalFilePath);
+    const destinationPath = path.join(imagesFolder, fileName);
+    
+    copyFileSync(originalFilePath, destinationPath);
+    
+    return fileName;
+  } catch (error) {
+    console.error('Greška pri kopiranju slike:', error);
+    throw error;
+  }
+});
+ipcMain.handle('copy-gallery-image', async (event, originalFilePath: string) => {
+  try {
+    const userDataPath = app.getPath('userData');
+    const galleryFolder = path.join(userDataPath, 'gallery');
+    
+    if (!existsSync(galleryFolder)) {
+      mkdirSync(galleryFolder, { recursive: true });
+    }
+    
+    const fileName = path.basename(originalFilePath);
+    const destinationPath = path.join(galleryFolder, fileName);
+    
+    copyFileSync(originalFilePath, destinationPath);
+    
+    return fileName;  // ili destinationPath ako želiš
+  } catch (error) {
+    console.error('Greška pri kopiranju galerijske slike:', error);
+    throw error;
+  }
+});
+
+
+

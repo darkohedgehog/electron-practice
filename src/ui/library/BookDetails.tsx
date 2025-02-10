@@ -29,14 +29,18 @@ const BookDetails = () => {
 
   const [book, setBook] = useState<Book | null>(null);
   const [gallery, setGallery] = useState<BookImage[]>([]);
+  const [userDataPath, setUserDataPath] = useState<string>('');
 
   useEffect(() => {
+    // Postavi userDataPath iz window.api – pretpostavljamo da je izložen kao svojstvo
+    setUserDataPath(window.api.userDataPath);
+  
     const fetchBookDetails = async () => {
       try {
-        // Ako nemamo direktan API za dobijanje jedne knjige, učitavamo sve i filtriramo
+        // Učitaj sve knjige i filtriraj po id-ju
         const books = await window.api.getBooks();
         const foundBook = books.find((b: Book) => b.id === Number(id));
-        setBook(foundBook);
+        setBook(foundBook ?? null); // Ako foundBook bude undefined, postavi null
         if (foundBook) {
           const images = await window.api.getBookImages(foundBook.id);
           setGallery(images);
@@ -47,6 +51,7 @@ const BookDetails = () => {
     };
     fetchBookDetails();
   }, [id]);
+  
 
   const getTitle = (book: Book) => {
     return i18n.language === 'sr-Cyrl' ? book.title_cyr : book.title_lat;
@@ -64,19 +69,24 @@ const BookDetails = () => {
     return <div className="p-8">Učitavanje...</div>;
   }
 
+  // Konstruši puni URL za glavnu sliku koristeći userDataPath i folder "images"
+  const mainImageUrl = userDataPath
+    ? `file://${userDataPath}/images/${book.file_path}`
+    : book.file_path; // fallback, ali idealno je puni URL
+
   return (
-    <div className="p-8">
+    <div className="p-8 ml-48">
       <button onClick={() => navigate(-1)} className="mb-4 px-4 py-2 bg-gray-300 rounded">
         Nazad
       </button>
       <div className="flex flex-col md:flex-row">
-        <div className="md:w-1/3">
+        {/*<div className="md:w-1/3">
           <img
-            src={book.file_path}
+            src={mainImageUrl}
             alt={getTitle(book)}
             className="w-full h-auto object-cover"
           />
-        </div>
+         </div>*/}
         <div className="md:w-2/3 md:pl-8">
           <h1 className="text-3xl font-bold mb-2">{getTitle(book)}</h1>
           <p className="text-xl text-gray-700 mb-2">{getAuthor(book)}</p>
@@ -88,14 +98,21 @@ const BookDetails = () => {
             <div>
               <h2 className="text-2xl font-semibold mb-2">Galerija</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {gallery.map(img => (
-                  <img
-                    key={img.id}
-                    src={img.image_path}
-                    alt={`Slika ${img.position}`}
-                    className="w-full h-32 object-cover rounded"
-                  />
-                ))}
+                {gallery.map(img => {
+                  // Za galerijske slike, ako su kopirane u drugi folder (npr. "gallery"),
+                  // konstruši URL slično kao za glavnu sliku:
+                  const galleryImageUrl = userDataPath
+                    ? `file://${userDataPath}/gallery/${img.image_path}`
+                    : img.image_path;
+                  return (
+                    <img
+                      key={img.id}
+                      src={galleryImageUrl}
+                      alt={`Slika ${img.position}`}
+                      className="w-full h-32 object-cover rounded"
+                    />
+                  );
+                })}
               </div>
             </div>
           )}

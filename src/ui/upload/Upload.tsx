@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 
 const Upload = () => {
   console.log(window.api);
@@ -11,38 +11,45 @@ const Upload = () => {
   const [descriptionCyr, setDescriptionCyr] = useState('');
   const [filePath, setFilePath] = useState('');
   const [year, setYear] = useState('');
-  // State za galeriju
   const [galleryFiles, setGalleryFiles] = useState<FileList | null>(null);
 
-  // Handler za upload fajla (npr. naslovna slika)
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0] as File & { path?: string };
-      console.log("Selected file object:", file);
-      const filePathValue = file.path || file.name;
-      console.log("File path value:", filePathValue);
-      setFilePath(filePathValue);
+  const handleSelectFile = async () => {
+    try {
+      // Otvori nativni dijalog za odabir fajla
+      const selectedFilePath = await window.api.openFileDialog();
+      console.log("Selected file path:", selectedFilePath);
+      // Kopiraj fajl u folder 'images' i vrati naziv fajla
+      const copiedFileName = await window.api.copyImage(selectedFilePath);
+      console.log("Slika kopirana, naziv fajla:", copiedFileName);
+      setFilePath(copiedFileName);
+    } catch (error) {
+      console.error("Greška pri otvaranju fajla:", error);
     }
   };
-  
-  
-  // Handler za galeriju
-  const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setGalleryFiles(e.target.files);
+  const handleGalleryChange = async () => {
+    try {
+      // Otvori dijalog za višestruki odabir
+      const selectedFilePaths: string[] = await window.api.openFileDialog();
+      console.log("Odabrane galerijske putanje:", selectedFilePaths);
+      const copiedFileNames: string[] = [];
+      for (let i = 0; i < selectedFilePaths.length; i++) {
+        const copiedFileName = await window.api.copyGalleryImage(selectedFilePaths[i]);
+        copiedFileNames.push(copiedFileName);
+      }
+      console.log("Kopirane galerijske slike:", copiedFileNames);
+      // Ovdje možeš spremiti kopirane nazive fajlova u state ako želiš
+    } catch (error) {
+      console.error("Greška pri kopiranju galerijske slike:", error);
     }
-  };
+  };  
+  
 
-  // Handler za form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
-    // Provera ako file_path nije definisan
     if (!filePath) {
       alert("Morate odabrati naslovnu sliku!");
       return;
     }
-  
     const book = {
       title_lat: titleLat,
       title_cyr: titleCyr,
@@ -53,28 +60,13 @@ const Upload = () => {
       file_path: filePath,
       year: year,
     };
-  
     console.log('Podaci koje šaljem:', book);
-  
     try {
       if (!window.api) {
         throw new Error("window.api nije definisan. Proverite preload konfiguraciju i da li pokrećete aplikaciju u Electron-u.");
       }
       const insertedId = await window.api.addBook(book);
       console.log('Knjiga dodata sa ID:', insertedId);
-  
-      if (galleryFiles) {
-        for (let i = 0; i < galleryFiles.length; i++) {
-          const file = galleryFiles[i] as File & { path: string };
-          await window.api.addBookImage({
-            book_id: insertedId as number,
-            image_path: file.path,
-            image_type: 'gallery',
-            position: i,
-          });
-        }
-      }
-  
       // Reset forme
       setTitleLat('');
       setTitleCyr('');
@@ -85,14 +77,12 @@ const Upload = () => {
       setFilePath('');
       setYear('');
       setGalleryFiles(null);
-  
       alert('Knjiga uspešno dodata!');
     } catch (error) {
       console.error('Greška pri dodavanju knjige:', error);
       alert('Došlo je do greške pri dodavanju knjige.');
     }
   };
-  
 
   return (
     <div className='ml-48 my-8'>
@@ -107,7 +97,7 @@ const Upload = () => {
             </p>
           </div>
           <form className="flex flex-wrap -m-2" onSubmit={handleSubmit}>
-            {/* Naslov na latinici */}
+            {/* Polja za unos teksta */}
             <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
               <div className="h-full flex items-center border-gray-800 border p-4 rounded-lg">
                 <div className="flex-grow">
@@ -122,7 +112,6 @@ const Upload = () => {
                 </div>
               </div>
             </label>
-            {/* Naslov na ćirilici */}
             <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
               <div className="h-full flex items-center border-gray-800 border p-4 rounded-lg">
                 <div className="flex-grow">
@@ -137,7 +126,6 @@ const Upload = () => {
                 </div>
               </div>
             </label>
-            {/* Autor na latinici */}
             <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
               <div className="h-full flex items-center border-gray-800 border p-4 rounded-lg">
                 <div className="flex-grow">
@@ -152,7 +140,6 @@ const Upload = () => {
                 </div>
               </div>
             </label>
-            {/* Autor na ćirilici */}
             <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
               <div className="h-full flex items-center border-gray-800 border p-4 rounded-lg">
                 <div className="flex-grow">
@@ -167,7 +154,6 @@ const Upload = () => {
                 </div>
               </div>
             </label>
-            {/* Opis na latinici */}
             <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
               <div className="h-full flex items-center border-gray-800 border p-4 rounded-lg">
                 <div className="flex-grow">
@@ -182,7 +168,6 @@ const Upload = () => {
                 </div>
               </div>
             </label>
-            {/* Opis na ćirilici */}
             <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
               <div className="h-full flex items-center border-gray-800 border p-4 rounded-lg">
                 <div className="flex-grow">
@@ -197,20 +182,13 @@ const Upload = () => {
                 </div>
               </div>
             </label>
-            {/* Ubaci naslovnu sliku – input type file */}
-            <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
-              <div className="h-full flex items-center border-gray-800 border p-4 rounded-lg">
-                <div className="flex-grow">
-                  <input
-                    type='file'
-                    required
-                    className="w-full py-6 px-6"
-                    onChange={handleFileChange}
-                  />
-                </div>
-              </div>
-            </label>
-            {/* Galerija – input type file, multiple */}
+            {/* Dugme za odabir slike */}
+            <div className="p-2 lg:w-1/3 md:w-1/2 w-full">
+              <button type="button" onClick={handleSelectFile} className="px-8 py-4 bg-green-600 text-white rounded">
+                Odaberi naslovnu sliku
+              </button>
+            </div>
+            {/* Galerija – input type file, multiple 
             <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
               <div className="h-full flex items-center border-gray-800 border p-4 rounded-lg">
                 <div className="flex-grow">
@@ -223,7 +201,7 @@ const Upload = () => {
                   />
                 </div>
               </div>
-            </label>
+            </label>*/}
             {/* Godina izdanja */}
             <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
               <div className="h-full flex items-center border-gray-800 border p-4 rounded-lg">
@@ -241,10 +219,7 @@ const Upload = () => {
             </label>
             {/* Dugme za slanje forme */}
             <div className="p-2 w-full">
-              <button
-                type="submit"
-                className="px-8 py-4 bg-blue-600 text-white rounded"
-              >
+              <button type="submit" className="px-8 py-4 bg-blue-600 text-white rounded">
                 Sačuvaj knjigu
               </button>
             </div>
