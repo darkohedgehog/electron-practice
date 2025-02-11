@@ -50,6 +50,8 @@ declare global {
       copyImage(originalFilePath: string): Promise<string>;
       copyGalleryImage(originalFilePath: string): Promise<string>;
       getUserDataPath(): Promise<string>;
+      deleteBook(bookId: number): Promise<number>;
+      updateBook(book: Book): Promise<number>;
       // Ako imaš još API funkcija, dodaj ih ovde...
     };
   }

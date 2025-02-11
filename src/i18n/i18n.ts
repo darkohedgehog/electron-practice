@@ -10,7 +10,8 @@ const resources = {
           home: "Naslovna",
           about: "O nama",
           library: "Biblioteka",
-          upload: "Podaci"
+          upload: "Unos",
+          manage: "Podaci"
         },
       }
     },
@@ -22,7 +23,8 @@ const resources = {
           home: "Насловна",
           about: "О нама",
           library: "Библиотека",
-          upload: "Подаци"
+          upload: "Унос",
+          manage: "Подаци"
         },
       }
     }

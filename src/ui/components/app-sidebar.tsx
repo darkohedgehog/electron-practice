@@ -1,4 +1,4 @@
-import { LibraryBig, Home, UsersRound, Upload } from "lucide-react";
+import { LibraryBig, Home, UsersRound, Upload, DatabaseZap } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import {
@@ -35,6 +35,11 @@ const items = [
     titleKey: "menu.upload",
     url: "/upload",
     icon: Upload,
+  },
+  {
+    titleKey: "menu.manage",
+    url: "/manage",
+    icon: DatabaseZap,
   },
 ];
 

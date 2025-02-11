@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron';
 import * as path from 'path';
-import { addBook, getBooks, getBookImages, addBookImage } from './db.js'; // Uvezi sve funkcije iz db.js
+import { addBook, getBooks, getBookImages, addBookImage, deleteBook, updateBook } from './db.js';
 import { copyFileSync, existsSync, mkdirSync } from 'fs';
 import { dialog } from 'electron';
 
@@ -156,6 +156,31 @@ ipcMain.handle('copy-gallery-image', async (event, originalFilePath: string) => 
     throw error;
   }
 });
+
+// Handler za brisanje knjige
+ipcMain.handle('delete-book', async (event: IpcMainInvokeEvent, bookId: number) => {
+  try {
+    const result = deleteBook(bookId);
+    console.log('Knjiga obrisana, broj izmenjenih redova:', result);
+    return result;
+  } catch (error) {
+    console.error('Greška pri brisanju knjige:', error);
+    throw error;
+  }
+});
+
+// Handler za ažuriranje knjige
+ipcMain.handle('update-book', async (event: IpcMainInvokeEvent, book) => {
+  try {
+    const result = updateBook(book);
+    console.log('Knjiga ažurirana, broj izmenjenih redova:', result);
+    return result;
+  } catch (error) {
+    console.error('Greška pri ažuriranju knjige:', error);
+    throw error;
+  }
+});
+
 
 
 

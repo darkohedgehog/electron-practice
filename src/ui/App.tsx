@@ -7,6 +7,7 @@ import Home from "./home/Home";
 import Library from "./library/Library";
 import Upload from "./upload/Upload";
 import BookDetails from "./library/BookDetails";
+import ManageBooks from "./manage/ManageBooks";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/library" element={<Library />} />
             <Route path="/library/:id" element={<BookDetails />} />
             <Route path="/upload" element={<Upload />} />
+            <Route path="/manage" element={<ManageBooks />} />
           </Routes>
         </Layout>
       </BrowserRouter>
