@@ -87,15 +87,17 @@ const Library = () => {
     i18n.language === 'sr-Cyrl' ? book.author_cyr : book.author_lat;
 
   return (
-    <div className="p-8 ml-48">
-      <h1 className="text-3xl flex items-center justify-center font-bold mb-6">Knjige</h1>
+    <div className="ml-72 mt-24">
+      <h1 className="flex items-center justify-center bg-gradient-to-br from-slate-400 to-slate-700 dark:from-slate-300 dark:to-slate-500 py-6 mb-12 bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-6xl">
+        Biblioteka Zaharija Orfelin
+      </h1>
       
       {/* Pretraga */}
-      <div className="mb-4 flex justify-center">
+      <div className="my-20 flex justify-center items-center mx-auto">
         <input
           type="text"
           placeholder="Pretraži knjige..."
-          className="border px-4 py-2 w-1/2"
+          className="border dark:border-accentDark border-accent rounded-3xl shadow-2xl shadow-slate-400 px-4 py-2 w-1/2"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -110,23 +112,23 @@ const Library = () => {
           return (
             <div
               key={book.id}
-              className="border p-4 rounded cursor-pointer hover:shadow-lg"
+              className="border border-accent dark:border-accentDark p-4 rounded-2xl cursor-pointer hover:shadow-lg shadow-slate-500"
               onClick={() => navigate(`/library/${book.id}`)}
             >
               {imageUrl ? (
                 <img
                   src={imageUrl}
                   alt={getTitle(book)}
-                  className="w-full h-48 object-cover mb-4"
+                  className="w-full h-72 rounded-2xl object-cover mb-4"
                 />
               ) : (
                 <div className="w-full h-48 flex items-center justify-center bg-gray-300">
                   <span>Slika nije dostupna</span>
                 </div>
               )}
-              <h2 className="text-xl font-semibold">{getTitle(book)}</h2>
-              <p className="text-gray-600">{getAuthor(book)}</p>
-              <p className="text-gray-500">Godina: {book.year}</p>
+              <h2 className="text-3xl font-semibold">{getTitle(book)}</h2>
+              <p className="text-slate-400 text-xl">{getAuthor(book)}</p>
+              <p className="text-slate-500">Godina: {book.year}</p>
             </div>
           );
         })}
