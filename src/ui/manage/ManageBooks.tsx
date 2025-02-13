@@ -217,7 +217,7 @@ const ManageBooks = () => {
                       <td className="border px-4 py-2 border-accent dark:border-accentDark">
                         {book.year}
                       </td>
-                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
+                      <td className="px-4 py-2 dark:border-accentDark flex items-center justify-center">
                         <button 
                           className="mr-2 px-2 py-1 bg-sky-800 text-white rounded" 
                           onClick={() => handleEdit(book)}
