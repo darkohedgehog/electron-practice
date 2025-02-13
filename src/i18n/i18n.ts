@@ -13,6 +13,9 @@ const resources = {
           upload: "Unos",
           manage: "Podaci"
         },
+        titleHome: "Vaša riznica znanja",
+        spanHome: "Biblioteka Zaharija Orfelin",
+        paragraphHome: "Prikupljamo i stručno obrađujemo, čuvamo i obnavljamo bibliotečku građu. Više od 20.000 naslova koje smo vredno prikupili i ljubomorno ih čuvamo za vas. Obogatite svoje znanje i upoznajte se sa našom kolekcijom..."
       }
     },
     'sr-Cyrl': {
@@ -26,6 +29,9 @@ const resources = {
           upload: "Унос",
           manage: "Подаци"
         },
+        titleHome: "Ваша ризница знања",
+        spanHome: "Библиотека Захарија Орфелин",
+        paragraphHome: "Прикупљамо и стручно обрађујемо, чувамо и обнављамо библиотечку грађу. Више од 20.000 наслова које смо вредно прикупили и љубоморно их чувамо за вас. Обогатите своје знање и упознајте се са нашом колекцијом..."
       }
     }
   };
