@@ -85,7 +85,7 @@ const Upload = () => {
   };
 
   return (
-    <div className='ml-48 my-8'>
+    <div className='ml-72 my-8'>
       <div className="text-gray-400">
         <div className="container px-5 py-24 mx-auto">
           <div className="flex flex-col text-center w-full mb-20">

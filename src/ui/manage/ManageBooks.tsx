@@ -146,16 +146,18 @@ const ManageBooks = () => {
     i18n.language === 'sr-Cyrl' ? book.author_cyr : book.author_lat;
 
   return (
-    <div className="p-8 ml-48">
-      <h1 className="text-3xl font-bold mb-6">Upravljanje knjigama</h1>
+    <div className="p-8 ml-72 mt-24">
+      <h1 className="flex items-center justify-center bg-gradient-to-br from-slate-400 to-slate-700 dark:from-slate-300 dark:to-slate-500 py-6 mb-12 bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-6xl">
+        Upravljanje knjigama
+      </h1>
 
       {/* Pretraga */}
       {!editingBook && (
-        <div className="mb-4">
+        <div className="my-20 flex justify-center items-center mx-auto">
           <input
             type="text"
             placeholder="Pretraži knjige..."
-            className="border px-4 py-2 w-full"
+            className="border dark:border-accentDark border-accent rounded-3xl shadow-2xl shadow-slate-400 px-4 py-2 w-1/2"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -166,33 +168,58 @@ const ManageBooks = () => {
       {!editingBook && (
         <>
           {filteredBooks.length === 0 ? (
-            <p>Nema unetih knjiga.</p>
+            <p className='text-2xl flex items-center justify-center font-semibold'>Nema unetih knjiga.</p>
           ) : (
             <>
-              <table className="min-w-full border-collapse border border-gray-300">
+              <table className="min-w-full border-collapse border shadow shadow-slate-400 mt-28">
                 <thead>
                   <tr>
-                    <th className="border px-4 py-2">ID</th>
-                    <th className="border px-4 py-2">Naslov (Lat)</th>
-                    <th className="border px-4 py-2">Naslov (Cyr)</th>
-                    <th className="border px-4 py-2">Autor (Lat)</th>
-                    <th className="border px-4 py-2">Autor (Cyr)</th>
-                    <th className="border px-4 py-2">Godina</th>
-                    <th className="border px-4 py-2">Akcije</th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
+                      ID
+                    </th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">Naslov (Lat)
+                    </th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
+                      Naslov (Cyr)
+                    </th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
+                      Autor (Lat)
+                    </th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
+                      Autor (Cyr)
+                    </th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
+                      Godina
+                    </th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
+                      Akcije
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedBooks.map((book) => (
                     <tr key={book.id}>
-                      <td className="border px-4 py-2">{book.id}</td>
-                      <td className="border px-4 py-2">{book.title_lat}</td>
-                      <td className="border px-4 py-2">{book.title_cyr}</td>
-                      <td className="border px-4 py-2">{book.author_lat}</td>
-                      <td className="border px-4 py-2">{book.author_cyr}</td>
-                      <td className="border px-4 py-2">{book.year}</td>
-                      <td className="border px-4 py-2">
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
+                        {book.id}
+                      </td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
+                        {book.title_lat}
+                      </td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
+                        {book.title_cyr}
+                      </td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
+                        {book.author_lat}
+                      </td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
+                        {book.author_cyr}
+                      </td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
+                        {book.year}
+                      </td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
                         <button 
-                          className="mr-2 px-2 py-1 bg-blue-500 text-white rounded" 
+                          className="mr-2 px-2 py-1 bg-sky-800 text-white rounded" 
                           onClick={() => handleEdit(book)}
                         >
                           Uredi
@@ -233,87 +260,87 @@ const ManageBooks = () => {
 
       {/* Modal za uređivanje - prikazuje se samo kada je editingBook postavljen */}
       {editingBook && (
-        <div className="fixed inset-0 flex items-center justify-center">
-          <div className="p-6 rounded shadow-lg w-1/2">
-            <h2 className="text-2xl font-bold mb-4">Uredi knjigu</h2>
+        <div className="inset-0 flex items-center justify-center w-lvh mt-20">
+          <div className="p-6 rounded shadow-lg shadow-slate-400 border border-accent dark:border-accentDark w-full">
+            <h2 className="text-2xl font-bold mb-4 text-accent">Uredi knjigu</h2>
             <form onSubmit={handleUpdate}>
               <div className="mb-4">
-                <label className="block mb-1">Naslov (Lat):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Naslov (Lat):</label>
                 <input
                   type="text"
                   name="title_lat"
                   value={formData.title_lat || ''}
                   onChange={handleChange}
-                  className="w-full border px-2 py-1"
+                  className="w-full border border-accent dark:border-accentDark rounded-lg px-2 py-1 text-neutral-500"
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1">Naslov (Cyr):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Naslov (Cyr):</label>
                 <input
                   type="text"
                   name="title_cyr"
                   value={formData.title_cyr || ''}
                   onChange={handleChange}
-                  className="w-full border px-2 py-1"
+                  className="w-full border border-accent dark:border-accentDark rounded-lg px-2 py-1 text-neutral-500"
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1">Autor (Lat):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Autor (Lat):</label>
                 <input
                   type="text"
                   name="author_lat"
                   value={formData.author_lat || ''}
                   onChange={handleChange}
-                  className="w-full border px-2 py-1"
+                  className="w-full border border-accent dark:border-accentDark rounded-lg px-2 py-1 text-neutral-500"
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1">Autor (Cyr):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Autor (Cyr):</label>
                 <input
                   type="text"
                   name="author_cyr"
                   value={formData.author_cyr || ''}
                   onChange={handleChange}
-                  className="w-full border px-2 py-1"
+                  className="w-full border border-accent dark:border-accentDark rounded-lg px-2 py-1 text-neutral-500"
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1">Godina izdanja:</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Godina izdanja:</label>
                 <input
                   type="text"
                   name="year"
                   value={formData.year || ''}
                   onChange={handleChange}
-                  className="w-full border px-2 py-1"
+                  className="w-full border border-accent dark:border-accentDark rounded-lg px-2 py-1 text-neutral-500"
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1">Opis (Lat):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Opis (Lat):</label>
                 <textarea
                   name="description_lat"
                   value={formData.description_lat || ''}
                   onChange={handleChange}
-                  className="w-full border px-2 py-1"
+                  className="w-full border border-accent dark:border-accentDark rounded-lg px-2 py-20 text-neutral-500"
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1">Opis (Cyr):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Opis (Cyr):</label>
                 <textarea
                   name="description_cyr"
                   value={formData.description_cyr || ''}
                   onChange={handleChange}
-                  className="w-full border px-2 py-1"
+                  className="w-full border border-accent dark:border-accentDark rounded-lg px-2 py-20 text-neutral-500"
                 />
               </div>
               {/* Sekcija za promenu slike */}
               <div className="mb-4">
-                <label className="block mb-1">Naslovna slika:</label>
+                <label className="block mb-4 text-card-bg-dark dark:text-accentDark">Naslovna slika:</label>
                 <div className="flex items-center">
                   {formData.file_path && userDataPath ? (
                     <img
                       src={encodeURI(`file://${userDataPath}/images/${formData.file_path}`)}
                       alt="Trenutna slika"
-                      className="w-20 h-20 object-cover mr-4"
+                      className="w-32 h-40 object-cover mx-6 rounded-lg"
                     />
                   ) : (
                     <div className="w-20 h-20 bg-gray-300 mr-4 flex items-center justify-center">
@@ -323,7 +350,7 @@ const ManageBooks = () => {
                   <button
                     type="button"
                     onClick={handleChangeImage}
-                    className="px-4 py-2 bg-blue-500 text-white rounded"
+                    className="px-4 py-2 bg-accent text-white rounded"
                   >
                     Promeni sliku
                   </button>
@@ -333,13 +360,13 @@ const ManageBooks = () => {
                 <button
                   type="button"
                   onClick={handleCancelEdit}
-                  className="mr-4 px-4 py-2 bg-gray-300 rounded"
+                  className="mr-4 px-4 py-2 bg-gray-400 rounded"
                 >
                   Odustani
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-600 text-white rounded"
+                  className="px-4 py-2 bg-darkpurple text-white rounded"
                 >
                   Sačuvaj
                 </button>

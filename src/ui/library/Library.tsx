@@ -122,7 +122,7 @@ const Library = () => {
                   className="w-full h-72 rounded-2xl object-cover mb-4"
                 />
               ) : (
-                <div className="w-full h-48 flex items-center justify-center bg-gray-300">
+                <div className="w-full h-72 flex items-center justify-center bg-gray-300">
                   <span>Slika nije dostupna</span>
                 </div>
               )}
