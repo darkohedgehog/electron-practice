@@ -1,6 +1,7 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import Fuse from 'fuse.js';
+import { PenLine, Trash2, ArrowBigLeftDash, ArrowBigRightDash, History, Save } from 'lucide-react';
 
 // Tip knjige – prilagodi prema svojoj bazi
 export interface Book {
@@ -222,13 +223,13 @@ const ManageBooks = () => {
                           className="mr-2 px-2 py-1 bg-sky-800 text-white rounded" 
                           onClick={() => handleEdit(book)}
                         >
-                          Uredi
+                          <PenLine />
                         </button>
                         <button 
                           className="px-2 py-1 bg-red-500 text-white rounded" 
                           onClick={() => handleDelete(book.id)}
                         >
-                          Obriši
+                         <Trash2 />
                         </button>
                       </td>
                     </tr>
@@ -240,17 +241,17 @@ const ManageBooks = () => {
                 <button 
                   onClick={handlePrevPage} 
                   disabled={currentPage === 1}
-                  className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+                  className="px-3 py-1 bg-gray-500 rounded disabled:opacity-50"
                 >
-                  Prethodna
+                  <ArrowBigLeftDash />
                 </button>
                 <span>Strana {currentPage} od {totalPages}</span>
                 <button 
                   onClick={handleNextPage} 
                   disabled={currentPage === totalPages}
-                  className="px-3 py-1 bg-gray-300 rounded disabled:opacity-50"
+                  className="px-3 py-1 bg-gray-500 rounded disabled:opacity-50"
                 >
-                  Sledeća
+                  <ArrowBigRightDash />
                 </button>
               </div>
             </>
@@ -350,24 +351,26 @@ const ManageBooks = () => {
                   <button
                     type="button"
                     onClick={handleChangeImage}
-                    className="px-4 py-2 bg-accent text-white rounded"
+                    className="px-4 py-2 bg-accent text-white rounded-full"
                   >
                     Promeni sliku
                   </button>
                 </div>
               </div>
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={handleCancelEdit}
-                  className="mr-4 px-4 py-2 bg-gray-400 rounded"
+                  className="mr-4 px-4 py-2 bg-gray-400 rounded-full gap-2 flex items-center justify-center text-darkpurple uppercase text-sm font-semibold"
                 >
+                  <span className='text-darkpurple'><History /></span>
                   Odustani
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-darkpurple text-white rounded"
+                  className="px-4 py-2 bg-darkpurple rounded-full gap-2 flex items-center justify-center text-accentDark uppercase text-sm font-semibold"
                 >
+                  <span className='text-accentDark'><Save /></span>
                   Sačuvaj
                 </button>
               </div>

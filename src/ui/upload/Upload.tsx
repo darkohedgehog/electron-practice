@@ -24,6 +24,7 @@ const Upload = () => {
       const copiedFileName = await window.api.copyImage(selectedFilePath);
       console.log("Slika kopirana, naziv fajla:", copiedFileName);
       setFilePath(copiedFileName);
+      alert("Slika je uspešno odabrana!");
     } catch (error) {
       console.error("Greška pri otvaranju fajla:", error);
     }
@@ -98,7 +99,7 @@ const Upload = () => {
               Unesite podatke o knjizi
             </p>
           </div>
-          <form className="flex flex-wrap -m-2" onSubmit={handleSubmit}>
+          <form className="flex flex-wrap" onSubmit={handleSubmit}>
             {/* Polja za unos teksta */}
             <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
               <div className="h-full flex items-center border-accent border p-4 rounded-lg">

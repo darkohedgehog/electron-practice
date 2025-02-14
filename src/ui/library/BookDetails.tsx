@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Undo2 } from 'lucide-react';
 
 type Book = {
   id: number;
@@ -32,15 +33,20 @@ const BookDetails = () => {
   const [userDataPath, setUserDataPath] = useState<string>('');
 
   useEffect(() => {
-    // Postavi userDataPath iz window.api – pretpostavljamo da je izložen kao svojstvo
-    setUserDataPath(window.api.userDataPath);
-  
+    // Dobavi userDataPath pomoću funkcije iz preload skripte
+    window.api.getUserDataPath()
+      .then((path: string) => {
+        console.log("userDataPath:", path);
+        setUserDataPath(path);
+      })
+      .catch((err: any) => console.error("Greška pri dobijanju userDataPath:", err));
+
     const fetchBookDetails = async () => {
       try {
         // Učitaj sve knjige i filtriraj po id-ju
         const books = await window.api.getBooks();
         const foundBook = books.find((b: Book) => b.id === Number(id));
-        setBook(foundBook ?? null); // Ako foundBook bude undefined, postavi null
+        setBook(foundBook ?? null); // Ako nije pronađena, postavi null
         if (foundBook) {
           const images = await window.api.getBookImages(foundBook.id);
           setGallery(images);
@@ -51,19 +57,15 @@ const BookDetails = () => {
     };
     fetchBookDetails();
   }, [id]);
-  
 
-  const getTitle = (book: Book) => {
-    return i18n.language === 'sr-Cyrl' ? book.title_cyr : book.title_lat;
-  };
+  const getTitle = (book: Book) =>
+    i18n.language === 'sr-Cyrl' ? book.title_cyr : book.title_lat;
 
-  const getAuthor = (book: Book) => {
-    return i18n.language === 'sr-Cyrl' ? book.author_cyr : book.author_lat;
-  };
+  const getAuthor = (book: Book) =>
+    i18n.language === 'sr-Cyrl' ? book.author_cyr : book.author_lat;
 
-  const getDescription = (book: Book) => {
-    return i18n.language === 'sr-Cyrl' ? book.description_cyr : book.description_lat;
-  };
+  const getDescription = (book: Book) =>
+    i18n.language === 'sr-Cyrl' ? book.description_cyr : book.description_lat;
 
   if (!book) {
     return <div className="p-8">Učitavanje...</div>;
@@ -71,39 +73,40 @@ const BookDetails = () => {
 
   // Konstruši puni URL za glavnu sliku koristeći userDataPath i folder "images"
   const mainImageUrl = userDataPath
-    ? `file://${userDataPath}/images/${book.file_path}`
-    : book.file_path; // fallback, ali idealno je puni URL
+    ? encodeURI(`file://${userDataPath}/images/${book.file_path}`)
+    : '';
 
   return (
     <div className="p-8 ml-48">
-      <button onClick={() => navigate(-1)} className="mb-4 px-4 py-2 bg-gray-300 rounded">
-        Nazad
-      </button>
       <div className="flex flex-col md:flex-row">
-        {/*<div className="md:w-1/3">
-          <img
-            src={mainImageUrl}
-            alt={getTitle(book)}
-            className="w-full h-auto object-cover"
-          />
-         </div>*/}
+        <div className="md:w-2/3">
+          {mainImageUrl ? (
+            <img
+              src={mainImageUrl}
+              alt={getTitle(book)}
+              className="md:w-2/3 sm:w-2/3 h-80 rounded-2xl object-cover mb-4"
+            />
+          ) : (
+            <div className="w-full h-72 flex items-center justify-center bg-gray-300">
+              <span>Slika nije dostupna</span>
+            </div>
+          )}
+        </div>
         <div className="md:w-2/3 md:pl-8">
-          <h1 className="text-3xl font-bold mb-2">{getTitle(book)}</h1>
-          <p className="text-xl text-gray-700 mb-2">{getAuthor(book)}</p>
-          <p className="text-gray-600 mb-2">
+          <h1 className="text-3xl font-bold mb-2 text-gray-600 dark:text-gray-400">{getTitle(book)}</h1>
+          <p className="text-xl text-gray-500 mb-2">{getAuthor(book)}</p>
+          <p className="text-gray-700 dark:text-accentDark mb-2">
             <strong>Godina izdanja:</strong> {book.year}
           </p>
-          <p className="mb-4">{getDescription(book)}</p>
-          {gallery.length > 0 && (
+          <p className="mb-4 text-gray-500">{getDescription(book)}</p>
+          {/*{gallery.length > 0 && (
             <div>
               <h2 className="text-2xl font-semibold mb-2">Galerija</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {gallery.map(img => {
-                  // Za galerijske slike, ako su kopirane u drugi folder (npr. "gallery"),
-                  // konstruši URL slično kao za glavnu sliku:
                   const galleryImageUrl = userDataPath
-                    ? `file://${userDataPath}/gallery/${img.image_path}`
-                    : img.image_path;
+                    ? encodeURI(`file://${userDataPath}/gallery/${img.image_path}`)
+                    : '';
                   return (
                     <img
                       key={img.id}
@@ -115,9 +118,18 @@ const BookDetails = () => {
                 })}
               </div>
             </div>
-          )}
+          )}*/}
         </div>
       </div>
+      <div className="p-2 w-full my-24 flex items-center justify-center">
+            <button onClick={() => navigate(-1)} className="relative mb-20 inline-flex h-12 w-[200px] overflow-hidden rounded-full p-[1px] focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50">
+             <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
+             <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-accent dark:text-accentDark backdrop-blur-3xl gap-4 uppercase">
+             <Undo2 />
+            Nazad
+            </span>
+            </button>
+            </div>
     </div>
   );
 };

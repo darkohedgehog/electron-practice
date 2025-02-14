@@ -50,11 +50,11 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="my-10 text-2xl font-bold text-accent">
+          <SidebarGroupLabel className="my-10 text-2xl font-bold text-darkpurple">
             {t("sidebarTitle")}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-4 text-accent">
+            <SidebarMenu className="gap-4 text-accentDark">
               {items.map((item) => (
                 <SidebarMenuItem key={item.titleKey}>
                   <SidebarMenuButton asChild>

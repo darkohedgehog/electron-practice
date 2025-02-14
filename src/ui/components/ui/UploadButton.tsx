@@ -27,10 +27,10 @@ const StyledWrapper = styled.div`
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    border: 2px dashed #e8e8e8;
+    border: 2px dashed #7A9CC6;
     padding: 1.5rem;
     border-radius: 10px;
-    box-shadow: 0px 48px 35px -48px #e8e8e8;
+    box-shadow: 0px 48px 35px -48px #7A9CC6;
   }
 
   .custum-file-upload .icon {
@@ -41,7 +41,7 @@ const StyledWrapper = styled.div`
 
   .custum-file-upload .icon svg {
     height: 80px;
-    fill: #7B00D3;
+    fill: #7A9CC6;
   }
 
   .custum-file-upload .text {
@@ -52,7 +52,7 @@ const StyledWrapper = styled.div`
 
   .custum-file-upload .text span {
     font-weight: 400;
-    color: #7B00D3;
+    color: #7A9CC6;
   }
 
   .custum-file-upload input {
