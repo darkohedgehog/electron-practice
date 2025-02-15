@@ -1,5 +1,6 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 import Fuse from 'fuse.js';
 import { PenLine, Trash2, ArrowBigLeftDash, ArrowBigRightDash, History, Save } from 'lucide-react';
 
@@ -149,7 +150,7 @@ const ManageBooks = () => {
   return (
     <div className="p-8 ml-72 mt-24">
       <h1 className="flex items-center justify-center bg-gradient-to-br from-slate-400 to-slate-700 dark:from-slate-300 dark:to-slate-500 py-6 mb-12 bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-6xl">
-        Upravljanje knjigama
+        {t('titleManage')}
       </h1>
 
       {/* Pretraga */}
@@ -157,7 +158,7 @@ const ManageBooks = () => {
         <div className="my-20 flex justify-center items-center mx-auto">
           <input
             type="text"
-            placeholder="Pretraži knjige..."
+            placeholder={t('placeholderManage')}
             className="border dark:border-accentDark border-accent rounded-3xl shadow-2xl shadow-slate-400 px-4 py-2 w-1/2"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -169,31 +170,32 @@ const ManageBooks = () => {
       {!editingBook && (
         <>
           {filteredBooks.length === 0 ? (
-            <p className='text-2xl flex items-center justify-center font-semibold'>Nema unetih knjiga.</p>
+            <p className='text-2xl flex items-center justify-center font-semibold'>{t('availableManage')}</p>
           ) : (
             <>
-              <table className="min-w-full border-collapse border shadow shadow-slate-400 mt-28">
+              <table className="min-w-full border-collapse border border-accent dark:border-accentDark shadow-2xl shadow-slate-400 mt-28">
                 <thead>
                   <tr>
                     <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                      ID
-                    </th>
-                    <th className="border px-4 py-2 border-accent dark:border-accentDark">Naslov (Lat)
+                      {t('idManage')}
                     </th>
                     <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                      Naslov (Cyr)
+                    {t('titleLatManage')}
                     </th>
                     <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                      Autor (Lat)
+                    {t('titleCyrManage')}
                     </th>
                     <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                      Autor (Cyr)
+                    {t('authorLatManage')}
                     </th>
                     <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                      Godina
+                    {t('authorCyrManage')}
                     </th>
                     <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                      Akcije
+                    {t('yearManage')}
+                    </th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
+                    {t('actionManage')}
                     </th>
                   </tr>
                 </thead>
@@ -218,7 +220,7 @@ const ManageBooks = () => {
                       <td className="border px-4 py-2 border-accent dark:border-accentDark">
                         {book.year}
                       </td>
-                      <td className="px-4 py-2 dark:border-accentDark flex items-center justify-center">
+                      <td className="px-4 py-2 border border-accent dark:border-accentDark flex items-center justify-center">
                         <button 
                           className="mr-2 px-2 py-1 bg-sky-800 text-white rounded" 
                           onClick={() => handleEdit(book)}
@@ -237,7 +239,7 @@ const ManageBooks = () => {
                 </tbody>
               </table>
               {/* Pagination controls */}
-              <div className="mt-4 flex justify-center space-x-4">
+              <div className="my-8 flex justify-center space-x-4">
                 <button 
                   onClick={handlePrevPage} 
                   disabled={currentPage === 1}
@@ -245,7 +247,7 @@ const ManageBooks = () => {
                 >
                   <ArrowBigLeftDash />
                 </button>
-                <span>Strana {currentPage} od {totalPages}</span>
+                <span>{t('pageManage')} {currentPage} {t('fromManage')} {totalPages}</span>
                 <button 
                   onClick={handleNextPage} 
                   disabled={currentPage === totalPages}
@@ -262,11 +264,13 @@ const ManageBooks = () => {
       {/* Modal za uređivanje - prikazuje se samo kada je editingBook postavljen */}
       {editingBook && (
         <div className="inset-0 flex items-center justify-center w-lvh mt-20">
-          <div className="p-6 rounded shadow-lg shadow-slate-400 border border-accent dark:border-accentDark w-full">
-            <h2 className="text-2xl font-bold mb-4 text-accent">Uredi knjigu</h2>
+          <div className="p-6 rounded-3xl shadow-2xl shadow-slate-400 border border-accent dark:border-accentDark w-full">
+            <h2 className="text-2xl font-bold mb-4 text-accent">
+              {t('editBookManage')}
+            </h2>
             <form onSubmit={handleUpdate}>
               <div className="mb-4">
-                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Naslov (Lat):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">{t('titleLatManage')}:</label>
                 <input
                   type="text"
                   name="title_lat"
@@ -276,7 +280,7 @@ const ManageBooks = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Naslov (Cyr):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">{t('titleCyrManage')}:</label>
                 <input
                   type="text"
                   name="title_cyr"
@@ -286,7 +290,7 @@ const ManageBooks = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Autor (Lat):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">{t('authorLatManage')}:</label>
                 <input
                   type="text"
                   name="author_lat"
@@ -296,7 +300,7 @@ const ManageBooks = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Autor (Cyr):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">{t('authorCyrManage')}:</label>
                 <input
                   type="text"
                   name="author_cyr"
@@ -306,7 +310,7 @@ const ManageBooks = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Godina izdanja:</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">{t('yearManage')}:</label>
                 <input
                   type="text"
                   name="year"
@@ -316,7 +320,7 @@ const ManageBooks = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Opis (Lat):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">{t('descLatManage')}:</label>
                 <textarea
                   name="description_lat"
                   value={formData.description_lat || ''}
@@ -325,7 +329,7 @@ const ManageBooks = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">Opis (Cyr):</label>
+                <label className="block mb-1 text-card-bg-dark dark:text-accentDark">{t('descCyrManage')}:</label>
                 <textarea
                   name="description_cyr"
                   value={formData.description_cyr || ''}
@@ -335,7 +339,7 @@ const ManageBooks = () => {
               </div>
               {/* Sekcija za promenu slike */}
               <div className="mb-4">
-                <label className="block mb-4 text-card-bg-dark dark:text-accentDark">Naslovna slika:</label>
+                <label className="block mb-4 text-card-bg-dark dark:text-accentDark">{t('imageManage')}:</label>
                 <div className="flex items-center">
                   {formData.file_path && userDataPath ? (
                     <img
@@ -345,7 +349,7 @@ const ManageBooks = () => {
                     />
                   ) : (
                     <div className="w-20 h-20 bg-gray-300 mr-4 flex items-center justify-center">
-                      <span>Ništa</span>
+                      <span>{t('noImageManage')}</span>
                     </div>
                   )}
                   <button
@@ -353,7 +357,7 @@ const ManageBooks = () => {
                     onClick={handleChangeImage}
                     className="px-4 py-2 bg-accent text-white rounded-full shadow-2xl shadow-accent dark:shadow-accentDark"
                   >
-                    Promeni sliku
+                    {t('changeImageManage')}
                   </button>
                 </div>
               </div>
@@ -364,14 +368,14 @@ const ManageBooks = () => {
                   className="mr-4 px-4 py-2 bg-gray-400 rounded-full gap-2 flex items-center justify-center text-darkpurple uppercase text-sm font-semibold shadow-2xl shadow-accent dark:shadow-accentDark"
                 >
                   <span className='text-darkpurple'><History /></span>
-                  Odustani
+                  {t('quitButtonManage')}
                 </button>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-darkpurple rounded-full gap-2 flex items-center justify-center text-accentDark uppercase text-sm font-semibold shadow-2xl shadow-accent dark:shadow-accentDark"
                 >
                   <span className='text-accentDark'><Save /></span>
-                  Sačuvaj
+                  {t('saveButtonManage')}
                 </button>
               </div>
             </form>

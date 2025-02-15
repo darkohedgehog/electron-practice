@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Fuse from 'fuse.js';
+import { t } from 'i18next';
+import { ArrowBigLeftDash, ArrowBigRightDash } from 'lucide-react';
 
 type Book = {
   id: number;
@@ -89,14 +91,14 @@ const Library = () => {
   return (
     <div className="ml-72 mt-24">
       <h1 className="flex items-center justify-center bg-gradient-to-br from-slate-400 to-slate-700 dark:from-slate-300 dark:to-slate-500 py-6 mb-12 bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-6xl">
-        Biblioteka Zaharija Orfelin
+        {t('titleLibrary')}
       </h1>
       
       {/* Pretraga */}
       <div className="my-20 flex justify-center items-center mx-auto">
         <input
           type="text"
-          placeholder="Pretraži knjige..."
+          placeholder={t('placeholderLibrary')}
           className="border dark:border-accentDark border-accent rounded-3xl shadow-2xl shadow-slate-400 px-4 py-2 w-1/2"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -123,12 +125,12 @@ const Library = () => {
                 />
               ) : (
                 <div className="w-full h-72 flex items-center justify-center bg-gray-300">
-                  <span>Slika nije dostupna</span>
+                  <span>{t('availableLibrary')}</span>
                 </div>
               )}
               <h2 className="text-3xl font-semibold">{getTitle(book)}</h2>
               <p className="text-slate-400 text-xl">{getAuthor(book)}</p>
-              <p className="text-slate-500">Godina: {book.year}</p>
+              <p className="text-slate-500">{t('yearLibrary')}: {book.year}</p>
             </div>
           );
         })}
@@ -136,21 +138,21 @@ const Library = () => {
 
       {/* Dugmad za paginaciju */}
       {totalPages > 1 && (
-        <div className="mt-4 flex justify-center space-x-4">
+        <div className="my-8 flex justify-center space-x-4">
           <button 
             onClick={handlePrevPage} 
             disabled={currentPage === 1}
-            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+            className="px-4 py-2 bg-gray-600 rounded disabled:opacity-50"
           >
-            Prethodna
+            <ArrowBigLeftDash />
           </button>
-          <span>Strana {currentPage} od {totalPages}</span>
+          <span>{t('pageLibrary')} {currentPage} {t('fromLibrary')} {totalPages}</span>
           <button 
             onClick={handleNextPage} 
             disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+            className="px-4 py-2 bg-gray-500 rounded disabled:opacity-50"
           >
-            Sledeća
+            <ArrowBigRightDash />
           </button>
         </div>
       )}

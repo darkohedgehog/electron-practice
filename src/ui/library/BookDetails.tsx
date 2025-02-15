@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Undo2 } from 'lucide-react';
+import { t } from 'i18next';
 
 type Book = {
   id: number;
@@ -68,7 +69,7 @@ const BookDetails = () => {
     i18n.language === 'sr-Cyrl' ? book.description_cyr : book.description_lat;
 
   if (!book) {
-    return <div className="p-8">Učitavanje...</div>;
+    return <div className="p-8">{t('loadingBookDetails')}</div>;
   }
 
   // Konstruši puni URL za glavnu sliku koristeći userDataPath i folder "images"
@@ -88,7 +89,7 @@ const BookDetails = () => {
             />
           ) : (
             <div className="w-full h-72 flex items-center justify-center bg-gray-300">
-              <span>Slika nije dostupna</span>
+              <span>{t('availableBookDetails')}</span>
             </div>
           )}
         </div>
@@ -96,7 +97,7 @@ const BookDetails = () => {
           <h1 className="text-3xl font-bold mb-2 text-gray-600 dark:text-gray-400">{getTitle(book)}</h1>
           <p className="text-xl text-gray-500 mb-2">{getAuthor(book)}</p>
           <p className="text-gray-700 dark:text-accentDark mb-2">
-            <strong>Godina izdanja:</strong> {book.year}
+            <strong>{t('yearBookDetails')}:</strong> {book.year}
           </p>
           <p className="mb-4 text-gray-500">{getDescription(book)}</p>
           {/*{gallery.length > 0 && (
@@ -126,7 +127,7 @@ const BookDetails = () => {
              <span className="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#E2CBFF_0%,#393BB2_50%,#E2CBFF_100%)]" />
              <span className="inline-flex h-full w-full cursor-pointer items-center justify-center rounded-full bg-slate-950 px-3 py-1 text-sm font-medium text-accent dark:text-accentDark backdrop-blur-3xl gap-4 uppercase">
              <Undo2 />
-            Nazad
+             {t('buttonBookDetails')}
             </span>
             </button>
             </div>
