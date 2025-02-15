@@ -77,7 +77,7 @@ const BookDetails = () => {
     : '';
 
   return (
-    <div className="p-8 ml-48">
+    <div className="p-8 ml-48 mt-24">
       <div className="flex flex-col md:flex-row">
         <div className="md:w-2/3">
           {mainImageUrl ? (

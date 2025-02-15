@@ -351,7 +351,7 @@ const ManageBooks = () => {
                   <button
                     type="button"
                     onClick={handleChangeImage}
-                    className="px-4 py-2 bg-accent text-white rounded-full"
+                    className="px-4 py-2 bg-accent text-white rounded-full shadow-2xl shadow-accent dark:shadow-accentDark"
                   >
                     Promeni sliku
                   </button>
@@ -361,14 +361,14 @@ const ManageBooks = () => {
                 <button
                   type="button"
                   onClick={handleCancelEdit}
-                  className="mr-4 px-4 py-2 bg-gray-400 rounded-full gap-2 flex items-center justify-center text-darkpurple uppercase text-sm font-semibold"
+                  className="mr-4 px-4 py-2 bg-gray-400 rounded-full gap-2 flex items-center justify-center text-darkpurple uppercase text-sm font-semibold shadow-2xl shadow-accent dark:shadow-accentDark"
                 >
                   <span className='text-darkpurple'><History /></span>
                   Odustani
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-darkpurple rounded-full gap-2 flex items-center justify-center text-accentDark uppercase text-sm font-semibold"
+                  className="px-4 py-2 bg-darkpurple rounded-full gap-2 flex items-center justify-center text-accentDark uppercase text-sm font-semibold shadow-2xl shadow-accent dark:shadow-accentDark"
                 >
                   <span className='text-accentDark'><Save /></span>
                   Sačuvaj
