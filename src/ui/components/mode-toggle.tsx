@@ -1,5 +1,7 @@
 
 import { MdOutlineLightMode, MdOutlineDarkMode, MdOutlineSystemSecurityUpdateGood } from "react-icons/md";
+import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 
 import { Button } from "@/ui/components/ui/button"
 import {
@@ -11,6 +13,7 @@ import {
 import { useTheme } from "@/ui/components/theme-provider"
 
 export function ModeToggle() {
+  const { i18n } = useTranslation();
   const { theme, setTheme } = useTheme()
 
   const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
@@ -36,19 +39,19 @@ export function ModeToggle() {
           className="gap-1 flex text-accent dark:text-accentDark"
           onClick={() => setTheme("light")}
         >
-          <MdOutlineLightMode /> Svetla
+          <MdOutlineLightMode /> {t('modeToggleLight')}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="gap-1 flex text-accent dark:text-accentDark"
           onClick={() => setTheme("dark")}
         >
-          <MdOutlineDarkMode /> Tamna
+          <MdOutlineDarkMode /> {t('modeToggleDark')}
         </DropdownMenuItem>
         <DropdownMenuItem
           className="gap-1 flex text-accent dark:text-accentDark"
           onClick={() => setTheme("system")}
         >
-          <MdOutlineSystemSecurityUpdateGood /> Sistem
+          <MdOutlineSystemSecurityUpdateGood /> {t('modeToggleSystem')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

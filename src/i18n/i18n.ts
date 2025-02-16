@@ -64,6 +64,9 @@ const resources = {
         descCyrManage: "Opis (Cyr)",
         noImageManage: "Nema slike",
         importDataManage: "Izvezi podatke u Excel",
+        modeToggleLight: "Svetla",
+        modeToggleDark: "Tamna",
+        modeToggleSystem: "Sistem",
       }
     },
     'sr-Cyrl': {
@@ -128,6 +131,9 @@ const resources = {
         descCyrManage: "Опис (Cyr)",
         noImageManage: "Нема слике",
         importDataManage: "Извези податке у Excel",
+        modeToggleLight: "Светла",
+        modeToggleDark: "Тамна",
+        modeToggleSystem: "Систем",
       }
     }
   };
