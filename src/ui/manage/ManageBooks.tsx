@@ -168,21 +168,27 @@ const ManageBooks = () => {
 
       // Preskoči prvi red (zaglavlje)
       worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber === 1) return;
+        if (rowNumber === 1) return; // Preskoči zaglavlje
+      
+        // Ako Excel sadrži ID u prvoj koloni, koristi ga, inače generiši novi (npr. postavi 0)
+        const idCell = row.getCell(1).value;
+        const id = idCell && idCell.toString().trim() !== "" ? parseInt(idCell.toString(), 10) : 0;
+        
         const book: Book = {
-          id: 0, // baza će generisati ID
-          title_lat: row.getCell(1).value?.toString() || "",
-          title_cyr: row.getCell(2).value?.toString() || "",
-          author_lat: row.getCell(3).value?.toString() || "",
-          author_cyr: row.getCell(4).value?.toString() || "",
-          year: row.getCell(5).value?.toString() || "",
+          id, // Koristi pročitan ID ili 0 ako nije definisano
+          title_lat: row.getCell(2).value?.toString() || "",
+          title_cyr: row.getCell(3).value?.toString() || "",
+          author_lat: row.getCell(4).value?.toString() || "",
+          author_cyr: row.getCell(5).value?.toString() || "",
+          year: row.getCell(6).value?.toString() || "",
           file_path: "", // Ako ne unosimo putanju do slike, ostavi prazno
-          description_lat: row.getCell(6).value?.toString() || "",
-          description_cyr: row.getCell(7).value?.toString() || "",
+          description_lat: row.getCell(7).value?.toString() || "",
+          description_cyr: row.getCell(8).value?.toString() || "",
           added_at: "", // Baza će dodati timestamp
         };
         importedBooks.push(book);
       });
+      
 
       // Ubaci svaku knjigu u bazu
       for (const book of importedBooks) {

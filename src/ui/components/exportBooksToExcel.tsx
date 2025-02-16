@@ -16,6 +16,8 @@ const exportBooksToExcel = async (books: Book[]) => {
       { header: 'Autor (Lat)', key: 'author_lat', width: 25 },
       { header: 'Autor (Cyr)', key: 'author_cyr', width: 25 },
       { header: 'Godina', key: 'year', width: 10 },
+      { header: 'Opis (Lat)', key: 'description_lat', width: 45 },
+      { header: 'Opis (Cyr)', key: 'description_cyr', width: 45 },
       { header: 'Datum unosa', key: 'added_at', width: 20 },
     ];
 
@@ -28,6 +30,8 @@ const exportBooksToExcel = async (books: Book[]) => {
         author_lat: book.author_lat,
         author_cyr: book.author_cyr,
         year: book.year,
+        description_lat: book.description_lat,
+        description_cyr: book.description_cyr,
         added_at: book.added_at,
       });
     });
