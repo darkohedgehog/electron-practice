@@ -62,7 +62,8 @@ const resources = {
         saveButtonManage: "Sačuvaj",
         descLatManage: "Opis (Lat)",
         descCyrManage: "Opis (Cyr)",
-        noImageManage: "Nema slike"
+        noImageManage: "Nema slike",
+        importDataManage: "Izvezi podatke u Excel",
       }
     },
     'sr-Cyrl': {
@@ -125,7 +126,8 @@ const resources = {
         saveButtonManage: "Сачувај",
         descLatManage: "Опис (Lat)",
         descCyrManage: "Опис (Cyr)",
-        noImageManage: "Нема слике"
+        noImageManage: "Нема слике",
+        importDataManage: "Извези податке у Excel",
       }
     }
   };
