@@ -1,5 +1,5 @@
 import { ThemeProvider } from "@/ui/components/theme-provider";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Layout from "./Layout";
 import "./index.css";
 import About from "./about/About";
@@ -12,7 +12,7 @@ import ManageBooks from "./manage/ManageBooks";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <BrowserRouter>
+      <HashRouter>
         <Layout>
           <Routes>
             <Route index element={<Home />} />
@@ -24,7 +24,7 @@ function App() {
             <Route path="/manage" element={<ManageBooks />} />
           </Routes>
         </Layout>
-      </BrowserRouter>
+      </HashRouter>
     </ThemeProvider>
   );
 }
