@@ -108,8 +108,10 @@ const Library = () => {
       {/* Prikaz knjiga */}
       <div className="grid grid-cols-3 xl:grid-cols-4 gap-6">
         {paginatedBooks.map((book) => {
-          const imageUrl = userDataPath
-            ? encodeURI(`file://${userDataPath}/images/${book.file_path}`)
+          // Pretpostavljamo da je userDataPath dobijen iz window.api.getUserDataPath()
+            const formattedUserDataPath = userDataPath.replace(/\\/g, '/');
+            const imageUrl = userDataPath
+            ? encodeURI(`file:///${formattedUserDataPath}/images/${book.file_path}`)
             : '';
           return (
             <div

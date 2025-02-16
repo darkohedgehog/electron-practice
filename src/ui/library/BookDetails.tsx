@@ -72,10 +72,12 @@ const BookDetails = () => {
     return <div className="p-8">{t('loadingBookDetails')}</div>;
   }
 
-  // Konstruši puni URL za glavnu sliku koristeći userDataPath i folder "images"
-  const mainImageUrl = userDataPath
-    ? encodeURI(`file://${userDataPath}/images/${book.file_path}`)
+ // Pretpostavljamo da je userDataPath dobijen iz window.api.getUserDataPath()
+    const formattedUserDataPath = userDataPath.replace(/\\/g, '/');
+    const mainImageUrl = userDataPath
+    ? encodeURI(`file:///${formattedUserDataPath}/images/${book.file_path}`)
     : '';
+
 
   return (
     <div className="p-8 ml-48 mt-24">

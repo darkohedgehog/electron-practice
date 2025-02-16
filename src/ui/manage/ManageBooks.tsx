@@ -432,7 +432,7 @@ const ManageBooks = () => {
                 <div className="flex items-center">
                   {formData.file_path && userDataPath ? (
                     <img
-                      src={encodeURI(`file://${userDataPath}/images/${formData.file_path}`)}
+                      src={encodeURI(`file:///${userDataPath.replace(/\\/g, '/')}/images/${formData.file_path}`)}
                       alt="Trenutna slika"
                       className="w-32 h-40 object-cover mx-6 rounded-lg"
                     />
