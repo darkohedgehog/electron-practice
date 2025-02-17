@@ -22,7 +22,7 @@ type Book = {
 function createWindow() {
   const preloadPath = path.join(__dirname, 'preload.js');
   const win = new BrowserWindow({
-    width: 1200,
+    width: 1300,
     height: 800,
     webPreferences: {
       preload: preloadPath,
@@ -33,7 +33,7 @@ function createWindow() {
   });
   console.log('Loading preload from:', preloadPath);
 
-  win.webContents.openDevTools();
+  //win.webContents.openDevTools();
 
   const devURL = 'http://localhost:5123';
   const prodURL = `file://${path.join(app.getAppPath(), '/dist-react/index.html')}`;
