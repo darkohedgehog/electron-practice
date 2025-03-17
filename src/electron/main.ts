@@ -3,6 +3,7 @@ import * as path from 'path';
 import { addBook, getBooks, getBookImages, addBookImage, deleteBook, updateBook } from './db.js';
 import { copyFileSync, existsSync, mkdirSync } from 'fs';
 import { dialog } from 'electron';
+import { migrateBooks } from './migrate';
 
 
 
@@ -33,7 +34,7 @@ function createWindow() {
   });
   console.log('Loading preload from:', preloadPath);
 
-  //win.webContents.openDevTools();
+  win.webContents.openDevTools();
 
   const devURL = 'http://localhost:5123';
   const prodURL = `file://${path.join(app.getAppPath(), '/dist-react/index.html')}`;
@@ -129,6 +130,7 @@ ipcMain.handle('copy-image', async (event, originalFilePath: string) => {
     const destinationPath = path.join(imagesFolder, fileName);
     
     copyFileSync(originalFilePath, destinationPath);
+    console.log("Kopiran fajl:", fileName, "u", destinationPath);
     
     return fileName;
   } catch (error) {
@@ -136,6 +138,7 @@ ipcMain.handle('copy-image', async (event, originalFilePath: string) => {
     throw error;
   }
 });
+
 ipcMain.handle('copy-gallery-image', async (event, originalFilePath: string) => {
   try {
     const userDataPath = app.getPath('userData');
@@ -178,6 +181,18 @@ ipcMain.handle('update-book', async (event: IpcMainInvokeEvent, book) => {
   } catch (error) {
     console.error('Greška pri ažuriranju knjige:', error);
     throw error;
+  }
+});
+ipcMain.handle('migrate-books', async () => {
+  try {
+    await migrateBooks();
+    return { success: true, message: 'Migracija uspešna' };
+  } catch (error: unknown) {
+    let errorMessage = 'Došlo je do greške';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    return { success: false, message: errorMessage };
   }
 });
 

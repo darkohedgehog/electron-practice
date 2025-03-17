@@ -87,3 +87,8 @@ so that it is smooth among other more minor things */
   border-radius: 3px;
   height: 100%;
 }
+
+.custom-react-quill .ql-editor.ql-blank::before {
+  color: #747474;
+  font-style: italic;
+}

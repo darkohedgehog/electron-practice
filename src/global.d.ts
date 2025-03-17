@@ -52,6 +52,7 @@ declare global {
       getUserDataPath(): Promise<string>;
       deleteBook(bookId: number): Promise<number>;
       updateBook(book: Book): Promise<number>;
+      migrateBooks: () => Promise<{ success: boolean; message: string }>;
       // Ako imaš još API funkcija, dodaj ih ovde...
     };
   }

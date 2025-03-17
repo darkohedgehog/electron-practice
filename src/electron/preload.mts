@@ -27,6 +27,7 @@ contextBridge.exposeInMainWorld('api', {
   copyGalleryImage: (originalFilePath: string) => ipcRenderer.invoke('copy-gallery-image', originalFilePath),
   deleteBook: (bookId: number) => ipcRenderer.invoke('delete-book', bookId),
   updateBook: (book: any) => ipcRenderer.invoke('update-book', book),
+  migrateBooks: () => ipcRenderer.invoke('migrate-books')
 });
 
 export {};

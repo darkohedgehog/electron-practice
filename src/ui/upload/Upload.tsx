@@ -1,8 +1,10 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { useState } from 'react';
 import UploadButton from '../components/ui/UploadButton';
 import { Save } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const Upload = () => {
   const { i18n } = useTranslation();
@@ -16,56 +18,43 @@ const Upload = () => {
   const [descriptionCyr, setDescriptionCyr] = useState('');
   const [filePath, setFilePath] = useState('');
   const [year, setYear] = useState('');
-  const [galleryFiles, setGalleryFiles] = useState<FileList | null>(null);
+
 
   const handleSelectFile = async () => {
     try {
-      // Otvori nativni dijalog za odabir fajla
+      console.log("handleSelectFile invoked");
       const selectedFilePath = await window.api.openFileDialog();
       console.log("Selected file path:", selectedFilePath);
-      // Kopiraj fajl u folder 'images' i vrati naziv fajla
       const copiedFileName = await window.api.copyImage(selectedFilePath);
-      console.log("Slika kopirana, naziv fajla:", copiedFileName);
+      console.log("Copied file name:", copiedFileName);
       setFilePath(copiedFileName);
       alert("Slika je uspešno odabrana!");
     } catch (error) {
       console.error("Greška pri otvaranju fajla:", error);
     }
-  };
-  const handleGalleryChange = async () => {
-    try {
-      // Otvori dijalog za višestruki odabir
-      const selectedFilePaths: string[] = await window.api.openFileDialog();
-      console.log("Odabrane galerijske putanje:", selectedFilePaths);
-      const copiedFileNames: string[] = [];
-      for (let i = 0; i < selectedFilePaths.length; i++) {
-        const copiedFileName = await window.api.copyGalleryImage(selectedFilePaths[i]);
-        copiedFileNames.push(copiedFileName);
-      }
-      console.log("Kopirane galerijske slike:", copiedFileNames);
-      // Ovdje možeš spremiti kopirane nazive fajlova u state ako želiš
-    } catch (error) {
-      console.error("Greška pri kopiranju galerijske slike:", error);
-    }
   };  
-  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const formattedDescriptionLat = JSON.stringify(formatDescription(descriptionLat));
+    const formattedDescriptionCyr = JSON.stringify(formatDescription(descriptionCyr));
+    console.log("Current filePath:", filePath);
     if (!filePath) {
       alert("Morate odabrati naslovnu sliku!");
       return;
     }
+    
     const book = {
       title_lat: titleLat,
       title_cyr: titleCyr,
       author_lat: authorLat,
       author_cyr: authorCyr,
-      description_lat: descriptionLat,
-      description_cyr: descriptionCyr,
+      description_lat: formattedDescriptionLat,
+      description_cyr: formattedDescriptionCyr,
       file_path: filePath,
       year: year,
     };
+    
     console.log('Podaci koje šaljem:', book);
     try {
       if (!window.api) {
@@ -82,12 +71,23 @@ const Upload = () => {
       setDescriptionCyr('');
       setFilePath('');
       setYear('');
-      setGalleryFiles(null);
       alert('Knjiga uspešno dodata!');
     } catch (error) {
       console.error('Greška pri dodavanju knjige:', error);
       alert('Došlo je do greške pri dodavanju knjige.');
     }
+  };
+  
+  const formatDescription = (html: string) => {
+    return {
+      blocks: [
+        {
+          id: `block-${Date.now()}`,
+          type: 'paragraph',
+          data: { text: html }
+        }
+      ]
+    };
   };
 
   return (
@@ -102,9 +102,9 @@ const Upload = () => {
             {t('paragraphUpload')}
             </p>
           </div>
-          <form className="flex flex-wrap" onSubmit={handleSubmit}>
+          <form className="grid grid-cols-2" onSubmit={handleSubmit}>
             {/* Polja za unos teksta */}
-            <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
+            <label className="p-2 w-full">
               <div className="h-full flex items-center border-accent border p-4 rounded-lg">
                 <div className="flex-grow">
                   <input
@@ -118,7 +118,7 @@ const Upload = () => {
                 </div>
               </div>
             </label>
-            <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
+            <label className="p-2 w-full">
               <div className="h-full flex items-center border-accent border p-4 rounded-lg">
                 <div className="flex-grow">
                   <input
@@ -132,7 +132,7 @@ const Upload = () => {
                 </div>
               </div>
             </label>
-            <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
+            <label className="p-2 w-full">
               <div className="h-full flex items-center border-accent border p-4 rounded-lg">
                 <div className="flex-grow">
                   <input
@@ -146,7 +146,7 @@ const Upload = () => {
                 </div>
               </div>
             </label>
-            <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
+            <label className="p-2 w-full">
               <div className="h-full flex items-center border-accent border p-4 rounded-lg">
                 <div className="flex-grow">
                   <input
@@ -160,54 +160,33 @@ const Upload = () => {
                 </div>
               </div>
             </label>
-            <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
-              <div className="h-full flex items-center border-accent border p-4 rounded-lg">
-                <div className="flex-grow">
-                  <input
-                    type='text'
-                    placeholder={t('placeholderLatDescriptionUpload')}
-                    required
-                    className="w-full py-10 px-6"
-                    value={descriptionLat}
-                    onChange={(e) => setDescriptionLat(e.target.value)}
-                  />
-                </div>
+            <label className="p-2 w-full h-full">
+              <div className="flex flex-col border-accent border p-4 rounded-lg h-[600px]">
+                <ReactQuill
+                  value={descriptionLat}
+                  onChange={setDescriptionLat}
+                  placeholder={t('placeholderLatDescriptionUpload')}
+                  className="custom-react-quill h-[500px]"
+                />
               </div>
             </label>
-            <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
-              <div className="h-full flex items-center border-accent border p-4 rounded-lg">
-                <div className="flex-grow">
-                  <input
-                    type='text'
-                    placeholder={t('placeholderCyrDescriptionUpload')}
-                    required
-                    className="w-full py-10 px-6"
-                    value={descriptionCyr}
-                    onChange={(e) => setDescriptionCyr(e.target.value)}
-                  />
-                </div>
+            <label className="p-2 w-full h-full">
+              <div className="flex flex-col border-accent border p-4 rounded-lg h-[600px]">
+                <ReactQuill
+                  value={descriptionCyr}
+                  onChange={setDescriptionCyr}
+                  placeholder={t('placeholderCyrDescriptionUpload')}
+                  className="custom-react-quill h-[500px]"
+                />
               </div>
             </label>
             {/* Dugme za odabir slike */}
-            <div className="p-2 lg:w-1/3 md:w-1/2 w-full" onClick={handleSelectFile}>
-              <UploadButton />
+            <div className="p-2 w-full mt-10" onClick={handleSelectFile}>
+              <UploadButton onClick={handleSelectFile}/>
             </div>
-            {/* Galerija – input type file, multiple 
-            <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
-              <div className="h-full flex items-center border-gray-800 border p-4 rounded-lg">
-                <div className="flex-grow">
-                  <input
-                    type='file'
-                    multiple
-                    required
-                    className="w-full py-6 px-6"
-                    onChange={handleGalleryChange}
-                  />
-                </div>
-              </div>
-            </label>*/}
+
             {/* Godina izdanja */}
-            <label className="p-2 lg:w-1/3 md:w-1/2 w-full">
+            <label className="p-2 w-full mt-10">
               <div className="h-full flex items-center border-accent border p-4 rounded-lg">
                 <div className="flex-grow">
                   <input

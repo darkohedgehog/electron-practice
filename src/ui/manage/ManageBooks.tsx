@@ -5,6 +5,7 @@ import Fuse from 'fuse.js';
 import { PenLine, Trash2, ArrowBigLeftDash, ArrowBigRightDash, History, Save, FolderDown, FolderUp } from 'lucide-react';
 import exportBooksToExcel from '../components/exportBooksToExcel';
 import ExcelJS from 'exceljs';
+import MigrateButton from './MigrateButton';
 
 
 // Tip knjige – prilagodi prema svojoj bazi
@@ -227,6 +228,8 @@ const ManageBooks = () => {
           />
         </div>
       )}
+
+      <MigrateButton />
 
       {/* Tabela knjiga i paginacija – prikazujemo samo kada modal nije aktivan */}
       {!editingBook && (
