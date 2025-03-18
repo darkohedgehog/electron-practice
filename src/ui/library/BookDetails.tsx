@@ -65,9 +65,24 @@ const BookDetails = () => {
   const getAuthor = (book: Book) =>
     i18n.language === 'sr-Cyrl' ? book.author_cyr : book.author_lat;
 
-  const getDescription = (book: Book) =>
-    i18n.language === 'sr-Cyrl' ? book.description_cyr : book.description_lat;
+    function renderDescription(desc: string | undefined): string {
+      if (!desc) return "";
+      try {
+        const obj = JSON.parse(desc);
+        if (obj && Array.isArray(obj.blocks)) {
+          // Kombiniraj tekst iz svih blokova
+          return obj.blocks.map((block: any) => block.data.text).join(" ");
+        }
+        return desc;
+      } catch (e) {
+        console.error("Greška pri parsiranju opisa:", e);
+        return desc;
+      }
+    }
 
+    const getDescription = (book: Book) =>
+    i18n.language === 'sr-Cyrl' ? book.description_cyr : book.description_lat;
+  
   if (!book) {
     return <div className="p-8">{t('loadingBookDetails')}</div>;
   }
@@ -101,7 +116,10 @@ const BookDetails = () => {
           <p className="text-gray-700 dark:text-accentDark mb-2">
             <strong>{t('yearBookDetails')}:</strong> {book.year}
           </p>
-          <p className="mb-4 text-gray-500">{getDescription(book)}</p>
+          <div
+          className="mb-4 text-gray-500"
+          dangerouslySetInnerHTML={{ __html: renderDescription(getDescription(book)) }}
+        />
           {/*{gallery.length > 0 && (
             <div>
               <h2 className="text-2xl font-semibold mb-2">Galerija</h2>
