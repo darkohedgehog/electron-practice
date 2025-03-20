@@ -37,15 +37,15 @@ interface BookData {
   data: {
     title: string;
     author: string;
-    description: any; // šaljemo kao objekt
+    description: any; // Objekt – blok struktura
     year: string;
     cover_image: number;
     locale: string;
-    external_id?: number; // za prevod se ne šalje
+    external_id?: number; // samo za default zapis (sr-Latn)
   };
 }
 
-// Formatiramo opis u blok strukturu – prilagodi ovu funkciju po potrebi
+// Funkcija za formatiranje opisa u blok strukturu
 function formatDescription(text: string): any {
   return {
     blocks: [
@@ -81,30 +81,46 @@ async function uploadImage(imageFileName: string): Promise<number | null> {
   }
 }
 
-// Pronalaženje zapisa prema external_id i locale
-async function findBookByExternalId(externalId: number, locale: string): Promise<any | null> {
+// Dohvat default zapisa (sr-Latn) po external_id
+async function findDefaultBook(externalId: number): Promise<any | null> {
   try {
     const res = await axios.get(`${STRAPI_URL}/api/books`, {
       params: {
         "filters[external_id][$eq]": externalId,
-        "filters[locale][$eq]": locale,
+        "filters[locale][$eq]": "sr-Latn"
       },
-      headers: {
-        Authorization: `Bearer ${STRAPI_AUTH_TOKEN}`,
-      },
+      headers: { Authorization: `Bearer ${STRAPI_AUTH_TOKEN}` },
     });
     const data = res.data.data;
     return (data && data.length > 0) ? data[0] : null;
   } catch (error: any) {
-    console.error('Greška pri pronalaženju zapisa:', error.response ? error.response.data : error.message);
+    console.error('Greška pri dohvaćanju default zapisa:', error.response ? error.response.data : error.message);
     return null;
   }
 }
 
-// Kreiranje ili dohvaćanje default zapisa (sr-Latn)
+// Dohvat prevoda (sr-Cyrl) po naslovu
+async function findLocalizationByTitle(title: string): Promise<any | null> {
+  try {
+    const res = await axios.get(`${STRAPI_URL}/api/books`, {
+      params: {
+        "filters[title][$eq]": title,
+        "filters[locale][$eq]": "sr-Cyrl"
+      },
+      headers: { Authorization: `Bearer ${STRAPI_AUTH_TOKEN}` },
+    });
+    const data = res.data.data;
+    return (data && data.length > 0) ? data[0] : null;
+  } catch (error: any) {
+    console.error('Greška pri dohvaćanju prevoda po naslovu:', error.response ? error.response.data : error.message);
+    return null;
+  }
+}
+
+// Kreiranje default zapisa (sr-Latn)
 async function importDefaultBook(bookData: BookData): Promise<any | null> {
-  const { external_id, locale } = bookData.data;
-  let defaultRecord = await findBookByExternalId(external_id!, locale);
+  const { external_id } = bookData.data;
+  let defaultRecord = await findDefaultBook(external_id!);
   if (defaultRecord) {
     console.log(`Default zapis za external_id ${external_id} već postoji.`);
     return defaultRecord;
@@ -121,14 +137,36 @@ async function importDefaultBook(bookData: BookData): Promise<any | null> {
       }
     );
     console.log(`Kreiran novi default zapis za external_id ${external_id}`);
-    return res.data.data;
+    defaultRecord = await findDefaultBook(external_id!);
+    return defaultRecord;
   } catch (error: any) {
     console.error("Greška pri kreiranju default zapisa:", error.response ? error.response.data : error.message);
     return null;
   }
 }
 
-// Kreiranje prevoda (sr-Cyrl) pomoću POST zahtjeva s query parametrima
+// Ažuriranje postojeće lokalizacije (PUT)
+async function updateLocalization(localizedId: number, localizationData: Partial<BookData["data"]>): Promise<any | null> {
+  try {
+    const res = await axios.put(
+      `${STRAPI_URL}/api/books/${localizedId}?locale=sr-Cyrl`,
+      { data: localizationData },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${STRAPI_AUTH_TOKEN}`,
+        },
+      }
+    );
+    console.log(`Ažurirana lokalizacija za ID ${localizedId}`);
+    return res.data.data;
+  } catch (error: any) {
+    console.error("Greška pri ažuriranju lokalizacije:", error.response ? error.response.data : error.message);
+    return null;
+  }
+}
+
+// Kreiranje nove lokalizacije (POST)
 async function createLocalization(defaultRecordId: number, localizationData: Partial<BookData["data"]>): Promise<any | null> {
   try {
     const res = await axios.post(
@@ -152,6 +190,7 @@ async function createLocalization(defaultRecordId: number, localizationData: Par
 export async function migrateBooks(): Promise<void> {
   const books = db.prepare('SELECT * FROM books').all() as LocalBook[];
   console.log(`Pronađeno ${books.length} knjiga u bazi.`);
+  
   for (const book of books) {
     console.log(`Migriram knjigu ID ${book.id}`);
     const coverImageId = await uploadImage(book.file_path);
@@ -179,18 +218,30 @@ export async function migrateBooks(): Promise<void> {
       continue;
     }
 
-    // Provjera da li već postoji prevod (sr-Cyrl)
-    const existingCyr = await findBookByExternalId(book.id, 'sr-Cyrl');
+    // Pokušaj dohvaćanja prevoda na osnovu naslova ćiriličnog zapisa
+    const existingCyr = await findLocalizationByTitle(book.title_cyr);
     if (existingCyr) {
-      console.log(`Ćirilični prevod za knjigu ID ${book.id} već postoji, preskačem.`);
+      console.log(`Ćirilični prevod za knjigu ID ${book.id} već postoji, ažuriram ga.`);
+      const updatePayload: Partial<BookData["data"]> = {
+        title: book.title_cyr,
+        author: book.author_cyr,
+        description: formatDescription(book.description_cyr),
+        year: book.year,
+        cover_image: coverImageId,
+        locale: 'sr-Cyrl',
+      };
+      const updated = await updateLocalization(existingCyr.id, updatePayload);
+      if (!updated) {
+        console.error(`Neuspješno ažuriranje lokalizacije za knjigu ID ${book.id}.`);
+      }
       continue;
     }
 
-    // Podaci za prevod (sr-Cyrl) – u payloadu ne šaljemo external_id
+    // Ako prevod ne postoji, kreiraj ga
     const localizationPayload: Partial<BookData["data"]> = {
       title: book.title_cyr,
       author: book.author_cyr,
-      description: formatDescription(book.description_cyr), // šaljemo objekt
+      description: formatDescription(book.description_cyr),
       year: book.year,
       cover_image: coverImageId,
       locale: 'sr-Cyrl',
