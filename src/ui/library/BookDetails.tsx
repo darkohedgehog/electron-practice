@@ -68,17 +68,21 @@ const BookDetails = () => {
     function renderDescription(desc: string | undefined): string {
       if (!desc) return "";
       try {
-        const obj = JSON.parse(desc);
-        if (obj && Array.isArray(obj.blocks)) {
-          // Kombiniraj tekst iz svih blokova
-          return obj.blocks.map((block: any) => block.data.text).join(" ");
+        // Ako opis počinje s "{" pretpostavljamo da je JSON
+        if (desc.trim().startsWith("{")) {
+          const obj = JSON.parse(desc);
+          if (obj && Array.isArray(obj.blocks)) {
+            return obj.blocks.map((block: any) => block.data.text).join(" ");
+          }
         }
+        // Ako ne, vraćamo originalni tekst
         return desc;
       } catch (e) {
         console.error("Greška pri parsiranju opisa:", e);
-        return desc;
+        // Ako parsiranje ne uspije, izbaci HTML tagove
+        return desc.replace(/<[^>]+>/g, '');
       }
-    }
+    }    
 
     const getDescription = (book: Book) =>
     i18n.language === 'sr-Cyrl' ? book.description_cyr : book.description_lat;

@@ -37,24 +37,11 @@ interface BookData {
   data: {
     title: string;
     author: string;
-    description: any; // Objekt – blok struktura
+    description: string; // Plain text
     year: string;
     cover_image: number;
     locale: string;
     external_id?: number; // samo za default zapis (sr-Latn)
-  };
-}
-
-// Funkcija za formatiranje opisa u blok strukturu
-function formatDescription(text: string): any {
-  return {
-    blocks: [
-      {
-        id: `block-${Date.now()}`,
-        type: "paragraph",
-        data: { text }
-      }
-    ]
   };
 }
 
@@ -204,7 +191,8 @@ export async function migrateBooks(): Promise<void> {
       data: {
         title: book.title_lat,
         author: book.author_lat,
-        description: JSON.parse(book.description_lat),
+        // Koristimo extractPlainText da dobijemo čist tekst bez HTML tagova
+        description: extractPlainText(book.description_lat),
         year: book.year,
         cover_image: coverImageId,
         locale: 'sr-Latn',
@@ -225,7 +213,7 @@ export async function migrateBooks(): Promise<void> {
       const updatePayload: Partial<BookData["data"]> = {
         title: book.title_cyr,
         author: book.author_cyr,
-        description: JSON.parse(book.description_cyr),
+        description: extractPlainText(book.description_cyr),
         year: book.year,
         cover_image: coverImageId,
         locale: 'sr-Cyrl',
@@ -241,7 +229,7 @@ export async function migrateBooks(): Promise<void> {
     const localizationPayload: Partial<BookData["data"]> = {
       title: book.title_cyr,
       author: book.author_cyr,
-      description: JSON.parse(book.description_cyr),
+      description: extractPlainText(book.description_cyr),
       year: book.year,
       cover_image: coverImageId,
       locale: 'sr-Cyrl',
@@ -256,6 +244,25 @@ export async function migrateBooks(): Promise<void> {
     console.log(`Knjiga ID ${book.id} migrirana (sr-Latn: ${defaultRecord.id}, sr-Cyrl: ${localizationResult.id}).`);
   }
   console.log('Migracija završena.');
+}
+
+// Pomoćna funkcija koja iz JSON stringa opisa izvlači plain text
+function extractPlainText(input: string): string {
+  const trimmed = input.trim();
+  // Ako string ne počinje s '{' ili '[', pretpostavljamo da nije JSON i vratimo ga onako kako jest
+  if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
+    return trimmed;
+  }
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (parsed && Array.isArray(parsed.blocks)) {
+      return parsed.blocks.map((block: any) => block.data.text).join(" ");
+    }
+    return trimmed;
+  } catch (e) {
+    //console.error("Greška pri parsiranju opisa:", e);
+    return trimmed;
+  }
 }
 
 migrateBooks().catch(console.error);

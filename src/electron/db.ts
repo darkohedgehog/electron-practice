@@ -2,27 +2,24 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import { app } from 'electron';
 
-// Putanja do SQLite fajla
 const dbPath = path.join(app.getPath('userData'), 'books.db');
 const db = new Database(dbPath);
 
-// Kreiranje tabele za knjige sa podrškom za latinicu i ćirilicu, dodata kolona "year"
 db.prepare(`
   CREATE TABLE IF NOT EXISTS books (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title_lat TEXT,          -- Naslov na latinici
-    title_cyr TEXT,          -- Naslov na ćirilici
-    author_lat TEXT,         -- Autor na latinici
-    author_cyr TEXT,         -- Autor na ćirilici
-    description_lat TEXT,    -- Opis na latinici
-    description_cyr TEXT,    -- Opis na ćirilici
-    file_path TEXT,          -- Putanja do fajla (npr. PDF ili slično)
-    year TEXT,               -- Godina izdanja
+    title_lat TEXT,
+    title_cyr TEXT,
+    author_lat TEXT,
+    author_cyr TEXT,
+    description_lat TEXT,
+    description_cyr TEXT,
+    file_path TEXT,
+    year TEXT,
     added_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `).run();
 
-// Kreiranje tabele za slike
 db.prepare(`
   CREATE TABLE IF NOT EXISTS book_images (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,25 +32,16 @@ db.prepare(`
   )
 `).run();
 
-// Funkcija za dodavanje knjige – prihvata podatke za oba jezika i godinu izdanja
 export function addBook(book: { 
   title_lat: string; 
   title_cyr: string;
   author_lat: string;
   author_cyr: string;
-  description_lat?: string | object;
-  description_cyr?: string | object;
+  description_lat?: string;
+  description_cyr?: string;
   file_path: string;
   year: string;
 }) {
-  // Ako je description_lat/cyr objekt, pretvori ih u string
-  const descLat = typeof book.description_lat === 'object' 
-    ? JSON.stringify(book.description_lat) 
-    : book.description_lat;
-  const descCyr = typeof book.description_cyr === 'object' 
-    ? JSON.stringify(book.description_cyr) 
-    : book.description_cyr;
-
   const stmt = db.prepare(`
     INSERT INTO books (title_lat, title_cyr, author_lat, author_cyr, description_lat, description_cyr, file_path, year)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -63,21 +51,18 @@ export function addBook(book: {
     book.title_cyr, 
     book.author_lat, 
     book.author_cyr, 
-    descLat || null, 
-    descCyr || null, 
+    book.description_lat || null, 
+    book.description_cyr || null, 
     book.file_path,
     book.year
   );
   return info.lastInsertRowid;
 }
 
-
-// Funkcija za dobijanje knjiga – vraća sve podatke
 export function getBooks() {
   return db.prepare('SELECT * FROM books ORDER BY added_at DESC').all();
 }
 
-// Funkcija za dodavanje slike za knjigu
 export function addBookImage(image: { 
   book_id: number; 
   image_path: string; 
@@ -89,16 +74,14 @@ export function addBookImage(image: {
   return info.lastInsertRowid;
 }
 
-// Funkcija za dobijanje slika za određenu knjigu
 export function getBookImages(book_id: number) {
   return db.prepare('SELECT * FROM book_images WHERE book_id = ? ORDER BY position ASC, added_at DESC').all(book_id);
 }
 
-
 export function deleteBook(bookId: number) {
   const stmt = db.prepare('DELETE FROM books WHERE id = ?');
   const info = stmt.run(bookId);
-  return info.changes;  // Broj obrisanih redova
+  return info.changes;
 }
 
 export function updateBook(book: { 
@@ -137,4 +120,3 @@ export function updateBook(book: {
   );
   return info.changes;
 }
-

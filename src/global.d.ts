@@ -17,8 +17,8 @@ export interface Book {
   title_cyr: string;
   author_lat: string;
   author_cyr: string;
-  description_lat?: string | object;
-  description_cyr?: string | object;
+  description_lat?: string;
+  description_cyr?: string;
   file_path: string;
   year: string;
   added_at: string;
@@ -41,8 +41,8 @@ declare global {
         title_cyr: string;
         author_lat: string;
         author_cyr: string;
-        description_lat?: string | object;
-        description_cyr?: string | object;
+        description_lat?: string;
+        description_cyr?: string;
         file_path: string;
         year: string;
       }) => Promise<number>;

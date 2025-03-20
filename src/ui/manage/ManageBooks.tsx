@@ -2,13 +2,22 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 import Fuse from 'fuse.js';
-import { PenLine, Trash2, ArrowBigLeftDash, ArrowBigRightDash, History, Save, FolderDown, FolderUp } from 'lucide-react';
+import {
+  PenLine,
+  Trash2,
+  ArrowBigLeftDash,
+  ArrowBigRightDash,
+  History,
+  Save,
+  FolderDown,
+  FolderUp
+} from 'lucide-react';
 import exportBooksToExcel from '../components/exportBooksToExcel';
 import ExcelJS from 'exceljs';
 import MigrateButton from './MigrateButton';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
-
-// Tip knjige – prilagodi prema svojoj bazi
 export interface Book {
   id: number;
   title_lat: string;
@@ -35,8 +44,11 @@ const ManageBooks = () => {
   const [userDataPath, setUserDataPath] = useState<string>('');
   const [importFile, setImportFile] = useState<File | null>(null);
 
+  // Pomoćna funkcija za uklanjanje HTML tagova
+  const stripHTML = (html: string): string => {
+    return html.replace(/<[^>]+>/g, '').trim();
+  };
 
-  // Učitaj knjige i userDataPath prilikom mountovanja
   useEffect(() => {
     window.api.getUserDataPath()
       .then((path: string) => {
@@ -75,22 +87,15 @@ const ManageBooks = () => {
     setCurrentPage(1);
   }, [searchQuery, books]);
 
-  // Paginacija
   const totalPages = Math.ceil(filteredBooks.length / ITEMS_PER_PAGE);
   const paginatedBooks = filteredBooks.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
 
-  const handlePrevPage = () => {
-    setCurrentPage(prev => Math.max(prev - 1, 1));
-  };
+  const handlePrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+  const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
 
-  const handleNextPage = () => {
-    setCurrentPage(prev => Math.min(prev + 1, totalPages));
-  };
-
-  // Brisanje knjige
   const handleDelete = async (bookId: number) => {
     try {
       await window.api.deleteBook(bookId);
@@ -100,19 +105,17 @@ const ManageBooks = () => {
     }
   };
 
-  // Uređivanje – pokretanje uređivanja
   const handleEdit = (book: Book) => {
     setEditingBook(book);
     setFormData(book);
   };
 
-  // Promena polja u formi
+  // Za input-eve (osim ReactQuill), koristimo zajednički handler
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Promena slike u modal formi
   const handleChangeImage = async () => {
     try {
       const selectedFilePathRaw = await window.api.openFileDialog();
@@ -128,12 +131,17 @@ const ManageBooks = () => {
     }
   };
 
-  // Ažuriranje knjige
+  // Kada korisnik klikne za update, prije slanja ukloni HTML tagove iz opisa
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingBook) return;
     try {
-      await window.api.updateBook(formData as Book);
+      const updatedBook = {
+        ...formData,
+        description_lat: stripHTML(formData.description_lat || ''),
+        description_cyr: stripHTML(formData.description_cyr || '')
+      };
+      await window.api.updateBook(updatedBook as Book);
       setEditingBook(null);
       setFormData({});
       await fetchBooks();
@@ -142,19 +150,17 @@ const ManageBooks = () => {
     }
   };
 
-  // Otkazivanje uređivanja
   const handleCancelEdit = () => {
     setEditingBook(null);
     setFormData({});
   };
 
-  // Implementacija handleImportFileChange – postavlja odabrani fajl u state
   const handleImportFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       setImportFile(event.target.files[0]);
     }
   };
-// Import podataka iz excel
+
   const handleImport = async () => {
     if (!importFile) {
       alert("Molimo odaberite Excel fajl.");
@@ -166,32 +172,24 @@ const ManageBooks = () => {
       await workbook.xlsx.load(buffer);
       const worksheet = workbook.worksheets[0];
       const importedBooks: Book[] = [];
-
-      // Preskoči prvi red (zaglavlje)
       worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber === 1) return; // Preskoči zaglavlje
-      
-        // Ako Excel sadrži ID u prvoj koloni, koristi ga, inače generiši novi (npr. postavi 0)
+        if (rowNumber === 1) return;
         const idCell = row.getCell(1).value;
         const id = idCell && idCell.toString().trim() !== "" ? parseInt(idCell.toString(), 10) : 0;
-        
         const book: Book = {
-          id, // Koristi pročitan ID ili 0 ako nije definisano
+          id,
           title_lat: row.getCell(2).value?.toString() || "",
           title_cyr: row.getCell(3).value?.toString() || "",
           author_lat: row.getCell(4).value?.toString() || "",
           author_cyr: row.getCell(5).value?.toString() || "",
           year: row.getCell(6).value?.toString() || "",
-          file_path: "", // Ako ne unosimo putanju do slike, ostavi prazno
+          file_path: "",
           description_lat: row.getCell(7).value?.toString() || "",
           description_cyr: row.getCell(8).value?.toString() || "",
-          added_at: "", // Baza će dodati timestamp
+          added_at: "",
         };
         importedBooks.push(book);
       });
-      
-
-      // Ubaci svaku knjigu u bazu
       for (const book of importedBooks) {
         await window.api.addBook(book);
       }
@@ -204,144 +202,84 @@ const ManageBooks = () => {
     }
   };
 
-
   const getTitle = (book: Book) =>
     i18n.language === 'sr-Cyrl' ? book.title_cyr : book.title_lat;
   const getAuthor = (book: Book) =>
     i18n.language === 'sr-Cyrl' ? book.author_cyr : book.author_lat;
-
 
   return (
     <div className="p-8 ml-72 mt-24">
       <h1 className="flex items-center justify-center bg-gradient-to-br from-slate-400 to-slate-700 dark:from-slate-300 dark:to-slate-500 py-6 mb-12 bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-6xl">
         {t('titleManage')}
       </h1>
-      {/* Pretraga */}
-      {!editingBook && (
-        <div className="my-20 flex justify-center items-center mx-auto">
-          <input
-            type="text"
-            placeholder={t('placeholderManage')}
-            className="border dark:border-accentDark border-accent rounded-3xl shadow-2xl shadow-slate-400 px-4 py-2 w-1/2"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-      )}
-
-      <MigrateButton />
-
-      {/* Tabela knjiga i paginacija – prikazujemo samo kada modal nije aktivan */}
       {!editingBook && (
         <>
+          <div className="my-20 flex justify-center items-center mx-auto">
+            <input
+              type="text"
+              placeholder={t('placeholderManage')}
+              className="border dark:border-accentDark border-accent rounded-3xl shadow-2xl shadow-slate-400 px-4 py-2 w-1/2"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <MigrateButton />
           {filteredBooks.length === 0 ? (
-            <p className='text-2xl flex items-center justify-center font-semibold'>{t('availableManage')}</p>
+            <p className="text-2xl flex items-center justify-center font-semibold">{t('availableManage')}</p>
           ) : (
             <>
               <table className="min-w-full border-collapse border border-accent dark:border-accentDark shadow-2xl shadow-slate-400 mt-28">
                 <thead>
                   <tr>
-                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                      {t('idManage')}
-                    </th>
-                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                    {t('titleLatManage')}
-                    </th>
-                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                    {t('titleCyrManage')}
-                    </th>
-                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                    {t('authorLatManage')}
-                    </th>
-                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                    {t('authorCyrManage')}
-                    </th>
-                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                    {t('yearManage')}
-                    </th>
-                    <th className="border px-4 py-2 border-accent dark:border-accentDark">
-                    {t('actionManage')}
-                    </th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">{t('idManage')}</th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">{t('titleLatManage')}</th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">{t('titleCyrManage')}</th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">{t('authorLatManage')}</th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">{t('authorCyrManage')}</th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">{t('yearManage')}</th>
+                    <th className="border px-4 py-2 border-accent dark:border-accentDark">{t('actionManage')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedBooks.map((book) => (
                     <tr key={book.id}>
-                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
-                        {book.id}
-                      </td>
-                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
-                        {book.title_lat}
-                      </td>
-                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
-                        {book.title_cyr}
-                      </td>
-                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
-                        {book.author_lat}
-                      </td>
-                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
-                        {book.author_cyr}
-                      </td>
-                      <td className="border px-4 py-2 border-accent dark:border-accentDark">
-                        {book.year}
-                      </td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">{book.id}</td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">{book.title_lat}</td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">{book.title_cyr}</td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">{book.author_lat}</td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">{book.author_cyr}</td>
+                      <td className="border px-4 py-2 border-accent dark:border-accentDark">{book.year}</td>
                       <td className="px-4 py-2 border border-accent dark:border-accentDark flex items-center justify-center">
-                        <button 
-                          className="mr-2 px-2 py-1 bg-sky-800 text-white rounded" 
+                        <button
+                          className="mr-2 px-2 py-1 bg-sky-800 text-white rounded"
                           onClick={() => handleEdit(book)}
                         >
                           <PenLine />
                         </button>
-                        <button 
-                          className="px-2 py-1 bg-red-500 text-white rounded" 
+                        <button
+                          className="px-2 py-1 bg-red-500 text-white rounded"
                           onClick={() => handleDelete(book.id)}
                         >
-                         <Trash2 />
+                          <Trash2 />
                         </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              {/* Dugmad za export i import */}
-            <div className='flex items-end justify-end flex-col my-24 gap-4'>
-                {/* Dugme za izvoz baze u Excel */}
-               <div className="mb-4 flex justify-center items-center gap-6 text-accent dark:text-accentDark">
-                <p>
-                  {t('importDataManage')}
-                </p>
-              <button
-                onClick={() => exportBooksToExcel(books)}
-                className="px-8 py-2 bg-indigo-800 text-white rounded-2xl shadow-2xl shadow-slate-400"
-               >
-              <FolderDown />
-              </button>
-              </div>
-              {/* Sekcija za import podataka */}
-             <div className="mb-4 flex justify-center items-center gap-6">
-             <input type="file" accept=".xlsx, .xls" onChange={handleImportFileChange} className="border px-4 py-2 rounded-2xl border-accent dark:border-accentDark shadow-2xl shadow-slate-400 text-accent dark:text-accentDark" />
-            <button
-             onClick={handleImport}
-              className="px-8 py-2 bg-green-800 text-white rounded-2xl shadow-2xl shadow-slate-400"
-              >
-             <FolderUp />
-            </button>
-              </div>
-          </div>
-              {/* Pagination controls */}
               <div className="my-8 flex justify-center space-x-4">
-                <button 
-                  onClick={handlePrevPage} 
+                <button
+                  onClick={handlePrevPage}
                   disabled={currentPage === 1}
                   className="px-3 py-1 bg-gray-500 rounded disabled:opacity-50"
                 >
                   <ArrowBigLeftDash />
                 </button>
-                <span className='text-accent dark:text-accentDark'>
+                <span className="text-accent dark:text-accentDark">
                   {t('pageManage')} {currentPage} {t('fromManage')} {totalPages}
-                  </span>
-                <button 
-                  onClick={handleNextPage} 
+                </span>
+                <button
+                  onClick={handleNextPage}
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 bg-gray-500 rounded disabled:opacity-50"
                 >
@@ -353,13 +291,10 @@ const ManageBooks = () => {
         </>
       )}
 
-      {/* Modal za uređivanje - prikazuje se samo kada je editingBook postavljen */}
       {editingBook && (
         <div className="inset-0 flex items-center justify-center w-lvh mt-20">
           <div className="p-6 rounded-3xl shadow-2xl shadow-slate-400 border border-accent dark:border-accentDark w-full">
-            <h2 className="text-2xl font-bold mb-4 text-accent">
-              {t('editBookManage')}
-            </h2>
+            <h2 className="text-2xl font-bold mb-4 text-accent">{t('editBookManage')}</h2>
             <form onSubmit={handleUpdate}>
               <div className="mb-4">
                 <label className="block mb-1 text-card-bg-dark dark:text-accentDark">{t('titleLatManage')}:</label>
@@ -413,23 +348,26 @@ const ManageBooks = () => {
               </div>
               <div className="mb-4">
                 <label className="block mb-1 text-card-bg-dark dark:text-accentDark">{t('descLatManage')}:</label>
-                <textarea
-                  name="description_lat"
+                <ReactQuill
                   value={formData.description_lat || ''}
-                  onChange={handleChange}
-                  className="w-full border border-accent dark:border-accentDark rounded-lg px-2 py-20 text-neutral-500"
+                  onChange={(value) =>
+                    setFormData((prev) => ({ ...prev, description_lat: value }))
+                  }
+                  placeholder={t('descLatManage')}
+                  className="custom-react-quill h-[200px]"
                 />
               </div>
               <div className="mb-4">
                 <label className="block mb-1 text-card-bg-dark dark:text-accentDark">{t('descCyrManage')}:</label>
-                <textarea
-                  name="description_cyr"
+                <ReactQuill
                   value={formData.description_cyr || ''}
-                  onChange={handleChange}
-                  className="w-full border border-accent dark:border-accentDark rounded-lg px-2 py-20 text-neutral-500"
+                  onChange={(value) =>
+                    setFormData((prev) => ({ ...prev, description_cyr: value }))
+                  }
+                  placeholder={t('descCyrManage')}
+                  className="custom-react-quill h-[200px]"
                 />
               </div>
-              {/* Sekcija za promenu slike */}
               <div className="mb-4">
                 <label className="block mb-4 text-card-bg-dark dark:text-accentDark">{t('imageManage')}:</label>
                 <div className="flex items-center">
@@ -457,16 +395,16 @@ const ManageBooks = () => {
                 <button
                   type="button"
                   onClick={handleCancelEdit}
-                  className="mr-4 px-4 py-2 bg-gray-400 rounded-full gap-2 flex items-center justify-center text-darkpurple uppercase text-sm font-semibold shadow-2xl shadow-accent dark:shadow-accentDark"
+                  className="mr-4 px-4 py-2 bg-gray-400 rounded-full flex items-center justify-center uppercase text-sm font-semibold shadow-2xl shadow-accent dark:shadow-accentDark"
                 >
-                  <span className='text-darkpurple'><History /></span>
+                  <span className="text-darkpurple"><History /></span>
                   {t('quitButtonManage')}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-darkpurple rounded-full gap-2 flex items-center justify-center text-accentDark uppercase text-sm font-semibold shadow-2xl shadow-accent dark:shadow-accentDark"
+                  className="px-4 py-2 bg-darkpurple rounded-full flex items-center justify-center uppercase text-sm font-semibold shadow-2xl shadow-accent dark:shadow-accentDark"
                 >
-                  <span className='text-accentDark'><Save /></span>
+                  <span className="text-accentDark"><Save /></span>
                   {t('saveButtonManage')}
                 </button>
               </div>
