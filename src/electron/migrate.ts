@@ -204,7 +204,7 @@ export async function migrateBooks(): Promise<void> {
       data: {
         title: book.title_lat,
         author: book.author_lat,
-        description: formatDescription(book.description_lat), // šaljemo objekt
+        description: JSON.parse(book.description_lat),
         year: book.year,
         cover_image: coverImageId,
         locale: 'sr-Latn',
@@ -225,7 +225,7 @@ export async function migrateBooks(): Promise<void> {
       const updatePayload: Partial<BookData["data"]> = {
         title: book.title_cyr,
         author: book.author_cyr,
-        description: formatDescription(book.description_cyr),
+        description: JSON.parse(book.description_cyr),
         year: book.year,
         cover_image: coverImageId,
         locale: 'sr-Cyrl',
@@ -241,7 +241,7 @@ export async function migrateBooks(): Promise<void> {
     const localizationPayload: Partial<BookData["data"]> = {
       title: book.title_cyr,
       author: book.author_cyr,
-      description: formatDescription(book.description_cyr),
+      description: JSON.parse(book.description_cyr),
       year: book.year,
       cover_image: coverImageId,
       locale: 'sr-Cyrl',

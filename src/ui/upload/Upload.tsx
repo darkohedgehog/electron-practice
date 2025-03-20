@@ -36,8 +36,8 @@ const Upload = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formattedDescriptionLat = JSON.stringify(formatDescription(descriptionLat));
-    const formattedDescriptionCyr = JSON.stringify(formatDescription(descriptionCyr));
+    const formattedDescriptionLat = formatDescription(descriptionLat);
+    const formattedDescriptionCyr = formatDescription(descriptionCyr);    
     console.log("Current filePath:", filePath);
     if (!filePath) {
       alert("Morate odabrati naslovnu sliku!");

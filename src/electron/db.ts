@@ -41,11 +41,19 @@ export function addBook(book: {
   title_cyr: string;
   author_lat: string;
   author_cyr: string;
-  description_lat?: string;
-  description_cyr?: string;
+  description_lat?: string | object;
+  description_cyr?: string | object;
   file_path: string;
   year: string;
 }) {
+  // Ako je description_lat/cyr objekt, pretvori ih u string
+  const descLat = typeof book.description_lat === 'object' 
+    ? JSON.stringify(book.description_lat) 
+    : book.description_lat;
+  const descCyr = typeof book.description_cyr === 'object' 
+    ? JSON.stringify(book.description_cyr) 
+    : book.description_cyr;
+
   const stmt = db.prepare(`
     INSERT INTO books (title_lat, title_cyr, author_lat, author_cyr, description_lat, description_cyr, file_path, year)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -55,13 +63,14 @@ export function addBook(book: {
     book.title_cyr, 
     book.author_lat, 
     book.author_cyr, 
-    book.description_lat || null, 
-    book.description_cyr || null, 
+    descLat || null, 
+    descCyr || null, 
     book.file_path,
     book.year
   );
   return info.lastInsertRowid;
 }
+
 
 // Funkcija za dobijanje knjiga – vraća sve podatke
 export function getBooks() {
