@@ -223,7 +223,6 @@ const ManageBooks = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <MigrateButton />
           {filteredBooks.length === 0 ? (
             <p className="text-2xl flex items-center justify-center font-semibold">{t('availableManage')}</p>
           ) : (
@@ -267,6 +266,37 @@ const ManageBooks = () => {
                   ))}
                 </tbody>
               </table>
+              {/* Dugmad za export i import */}
+            <div className='flex items-end justify-end flex-col my-24 gap-4'>
+                {/* Dugme za izvoz baze u Excel */}
+               <div className="mb-4 flex justify-center items-center gap-6 text-accent dark:text-accentDark">
+                <p>
+                  {t('importDataManage')}
+                </p>
+              <button
+                onClick={() => exportBooksToExcel(books)}
+                className="px-8 py-2 bg-indigo-800 text-white rounded-2xl shadow-2xl shadow-slate-400"
+               >
+              <FolderDown />
+              </button>
+              </div>
+              {/* Sekcija za import podataka */}
+             <div className="mb-4 flex justify-center items-center gap-6">
+             <input type="file" accept=".xlsx, .xls" onChange={handleImportFileChange} className="border px-4 py-2 rounded-2xl border-accent dark:border-accentDark shadow-2xl shadow-slate-400 text-accent dark:text-accentDark" />
+            <button
+             onClick={handleImport}
+              className="px-8 py-2 bg-green-800 text-white rounded-2xl shadow-2xl shadow-slate-400"
+              >
+             <FolderUp />
+            </button>
+              </div>
+          </div>
+              {/* Migration to web app button */}
+              <div className='flex items-center justify-center my-16 text-accent dark:text-accentDark'>
+                Pošalji knjige na web aplikaciju
+              </div>
+              <MigrateButton />
+              {/* Pagination controls */}
               <div className="my-8 flex justify-center space-x-4">
                 <button
                   onClick={handlePrevPage}
