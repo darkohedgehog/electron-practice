@@ -384,7 +384,7 @@ const ManageBooks = () => {
                     setFormData((prev) => ({ ...prev, description_lat: value }))
                   }
                   placeholder={t('descLatManage')}
-                  className="custom-react-quill h-[200px]"
+                  className="custom-react-quill"
                 />
               </div>
               <div className="mb-4">
@@ -395,7 +395,7 @@ const ManageBooks = () => {
                     setFormData((prev) => ({ ...prev, description_cyr: value }))
                   }
                   placeholder={t('descCyrManage')}
-                  className="custom-react-quill h-[200px]"
+                  className="custom-react-quill"
                 />
               </div>
               <div className="mb-4">
