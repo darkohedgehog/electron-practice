@@ -16,12 +16,15 @@ const About = () => {
         <p className='mt-4'>
         {t('paragraph3About')}
         </p>
-      </div>
-      <div className="text-neutral-500 dark:text-gray text-2xl max-w-5xl mx-auto mt-4">
+        <div className="text-neutral-500 dark:text-gray text-2xl max-w-5xl mx-auto mt-4">
       {t('paragraph4About')}
         <p className='mt-4 font-bold'>
         {t('paragraph5About')}
+        <p className='mt-4 font-bold uppercase'>
+        {t('paragraph6About')}
         </p>
+        </p>
+      </div>
       </div>
     </div>
     </div>

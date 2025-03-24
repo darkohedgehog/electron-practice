@@ -130,8 +130,8 @@ const Library = () => {
                   <span>{t('availableLibrary')}</span>
                 </div>
               )}
-              <h2 className="text-3xl font-semibold">{getTitle(book)}</h2>
-              <p className="text-slate-400 text-xl">{getAuthor(book)}</p>
+              <h2 className="text-3xl font-semibold text-accent dark:text-accentDark mb-3">{getTitle(book)}</h2>
+              <p className="text-slate-400 text-xl mb-2">{getAuthor(book)}</p>
               <p className="text-slate-500">{t('yearLibrary')}: {book.year}</p>
             </div>
           );

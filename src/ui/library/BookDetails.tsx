@@ -115,13 +115,13 @@ const BookDetails = () => {
           )}
         </div>
         <div className="md:w-2/3 md:pl-8">
-          <h1 className="text-3xl font-bold mb-2 text-gray-600 dark:text-gray-400">{getTitle(book)}</h1>
-          <p className="text-xl text-gray-500 mb-2">{getAuthor(book)}</p>
+          <h1 className="text-4xl font-bold mb-2 text-gray-600 dark:text-gray-400">{getTitle(book)}</h1>
+          <p className="text-2xl text-gray-500 mb-2">{getAuthor(book)}</p>
           <p className="text-gray-700 dark:text-accentDark mb-2">
             <strong>{t('yearBookDetails')}:</strong> {book.year}
           </p>
           <div
-          className="mb-4 text-gray-500"
+          className="mb-4 text-gray-500 text-clip text-xl"
           dangerouslySetInnerHTML={{ __html: renderDescription(getDescription(book)) }}
         />
           {/*{gallery.length > 0 && (

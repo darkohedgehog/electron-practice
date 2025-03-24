@@ -293,7 +293,7 @@ const ManageBooks = () => {
           </div>
               {/* Migration to web app button */}
               <div className='flex items-center justify-center my-16 text-accent dark:text-accentDark'>
-                Pošalji knjige na web aplikaciju
+              {t('migrationInfo')}
               </div>
               <MigrateButton />
               {/* Pagination controls */}
