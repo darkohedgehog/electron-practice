@@ -18,7 +18,7 @@ const resources = {
         paragraphHome: "Prikupljamo i stručno obrađujemo, čuvamo i obnavljamo bibliotečku građu. Više od 20.000 naslova koje smo vredno prikupili i ljubomorno ih čuvamo za vas. Obogatite svoje znanje i upoznajte se sa našom kolekcijom...",
         titleAbout: "O nama",
         paragraph1About: "Biblioteka “Zaharija Orfelin“ osnovana je 18. aprila 2019. godine i nosi ime srpskog pisca i kaligrafe Zaharije Orfelina, rođenog u Vukovaru.",
-        paragraph2About: "Nalzi se u zgradi Zajedničkog veća opština na adresi Eugena Kvaternika 1, a radno vreme biblioteke je svakim radnim danom od 8 do 15 časova.",
+        paragraph2About: "Nalazi se u zgradi Zajedničkog veća opština na adresi Eugena Kvaternika 1, a radno vreme biblioteke je svakim radnim danom od 8 do 15 časova.",
         paragraph3About: "Članarina iznosi 5 € za odrasle, a dečja i grupna članarina izosi 3 €.",
         paragraph4About: "U biblioteci možete pronaći veliki broj knjiga na srpskom jeziku i ćiriličnom pismu iz svih oblasti.",
         paragraph5About: "Očekujemo vaš dolazak!!",

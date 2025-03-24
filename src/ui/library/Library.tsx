@@ -139,8 +139,8 @@ const Library = () => {
       </div>
 
       {/* Dugmad za paginaciju */}
-      {totalPages > 1 && (
-        <div className="my-8 flex justify-center space-x-4">
+      {totalPages && (
+        <div className="my-10 flex justify-center space-x-4">
           <button 
             onClick={handlePrevPage} 
             disabled={currentPage === 1}
@@ -148,7 +148,8 @@ const Library = () => {
           >
             <ArrowBigLeftDash />
           </button>
-          <span>{t('pageLibrary')} {currentPage} {t('fromLibrary')} {totalPages}</span>
+          <span className='text-accent dark:text-accentDark text-xl'>{t('pageLibrary')} {currentPage} {t('fromLibrary')} {totalPages}
+          </span>
           <button 
             onClick={handleNextPage} 
             disabled={currentPage === totalPages}

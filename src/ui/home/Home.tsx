@@ -10,11 +10,11 @@ const Home = () => {
       <div className="flex flex-col items-start gap-10">
         <h1 className="text-3xl md:text-4xl sm:text-2xl md:leading-relaxed max-w-5xl text-center lg:text-left tracking-tight font-bold bg-clip-text text-transparent bg-gradient-to-b dark:from-neutral-800 dark:via-white dark:to-white from-neutral-600 via-neutral-400 to-neutral-600">
        {t('titleHome')}
-       <span className="uppercase text-3xl md:text-2xl gap-1 flex items-center justify-center lg:justify-start bg-gradient-to-br from-slate-400 to-slate-500 bg-clip-text text-center font-medium tracking-tight text-transparent">
+       <span className="uppercase text-4xl md:text-3xl gap-1 flex items-center justify-center lg:justify-start bg-gradient-to-br from-slate-400 to-slate-500 bg-clip-text text-center font-medium tracking-tight text-transparent">
         {t('spanHome')}
         </span>
         </h1>
-        <p className="mt-2 md:mt-6 text-center lg:text-left md:text-xl text-neutral-600 dark:text-neutral-400 max-w-3xl  relative z-10">
+        <p className="mt-2 md:mt-6 text-center lg:text-left md:text-2xl text-neutral-600 dark:text-neutral-400 max-w-3xl  relative z-10">
         {t('paragraphHome')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center sm:justify-start w-full items-center">
