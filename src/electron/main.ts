@@ -32,9 +32,9 @@ function createWindow() {
       webSecurity: false,
     },
   });
-  console.log('Loading preload from:', preloadPath);
+  //console.log('Loading preload from:', preloadPath);
 
-  win.webContents.openDevTools();
+ // win.webContents.openDevTools();
 
   const devURL = 'http://localhost:5123';
   const prodURL = `file://${path.join(app.getAppPath(), '/dist-react/index.html')}`;
