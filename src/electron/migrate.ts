@@ -6,7 +6,12 @@ import FormData from 'form-data';
 import dotenv from 'dotenv';
 import { app } from 'electron';
 
-dotenv.config();
+const envPath = app && app.isPackaged 
+  ? path.join(process.resourcesPath, '.env')
+  : path.join(process.cwd(), '.env');
+
+dotenv.config({ path: envPath });
+console.log('Učitavam .env fajl sa putanje:', envPath);
 
 const STRAPI_URL: string = process.env.VITE_STRAPI_API_URL as string;
 const STRAPI_AUTH_TOKEN: string = process.env.VITE_STRAPI_AUTH_TOKEN as string;

@@ -1,10 +1,17 @@
-import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron';
 import * as path from 'path';
+import * as dotenv from 'dotenv';
+import { app, BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron';
 import { addBook, getBooks, getBookImages, addBookImage, deleteBook, updateBook } from './db.js';
 import { copyFileSync, existsSync, mkdirSync } from 'fs';
 import { dialog } from 'electron';
 import { migrateBooks } from './migrate';
 
+const envPath = app && app.isPackaged 
+  ? path.join(process.resourcesPath, '.env')
+  : path.join(process.cwd(), '.env');
+
+dotenv.config({ path: envPath });
+console.log('Učitavam .env fajl sa putanje:', envPath);
 
 
 
@@ -32,7 +39,7 @@ function createWindow() {
       webSecurity: false,
     },
   });
-  //console.log('Loading preload from:', preloadPath);
+ console.log('Loading preload from:', preloadPath);
 
  // win.webContents.openDevTools();
 
